@@ -1,8 +1,3 @@
-import java.util.Scanner;
-
-import org.jasypt.util.password.StrongPasswordEncryptor;
-import org.jasypt.util.text.BasicTextEncryptor;
-
 import Encryption.Encryption;
 
 public class Test {

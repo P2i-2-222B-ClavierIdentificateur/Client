@@ -1,7 +1,6 @@
 package KeystrokeMeasuring;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import Encryption.Encryption;
 import Main.Password;

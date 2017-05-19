@@ -38,5 +38,6 @@
 	<classpathentry kind="lib" path="jasypt-1.9.2/lib/jasypt-wicket15-1.9.2.jar"/>
 	<classpathentry kind="lib" path="mysql-connector-java-5.1.42-bin.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="jssc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

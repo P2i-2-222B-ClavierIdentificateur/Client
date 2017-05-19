@@ -2,7 +2,6 @@ package Main;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 
 public class PasswordGetter {
 	

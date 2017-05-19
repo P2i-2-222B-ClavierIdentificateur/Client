@@ -1,19 +1,24 @@
 package GUI;
 
-import GUIElements.CancelButton;
-import Main.Main;
-import Main.Password;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.*;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.awt.event.FocusListener;
 
+import GUIElements.CancelButton;
 import Main.Main;
 import Main.Password;
 import Warnings.SimpleWarning;

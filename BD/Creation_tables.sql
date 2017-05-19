@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `CompteSystem` (
 CREATE TABLE IF NOT EXISTS `Compte` (
   `Login` VARCHAR(45) NOT NULL,
   `masterPassword` VARCHAR(100) NOT NULL,
-  `Index` INT(11) ,
+  `Index` INT(11) auto_increment,
   `domainHash` INT(11) NOT NULL,
   `passwordLength` VARCHAR(45) NOT NULL,
   `CompteSystem_Login` VARCHAR(45) NOT NULL,

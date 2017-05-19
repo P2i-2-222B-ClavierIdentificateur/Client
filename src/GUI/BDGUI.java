@@ -3,8 +3,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,7 +10,6 @@ import javax.swing.JPasswordField;
 import javax.swing.SpringLayout;
 
 import Database.Insert;
-import KeystrokeMeasuring.KeyStrokeListener;
 import KeystrokeMeasuring.TimingManager;
 import Main.Entry;
 import Main.Main;
@@ -44,7 +41,7 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 		this.passwordLength = passwordLength;
 		System.out.println(userID);
 		entries = new Entry[15];	
-		timingManager = new TimingManager(p,domaine);
+		timingManager = new TimingManager(p,domaine,psswd);
 		JLabel label1 = new JLabel ("Saisir le mot de passe 15 fois sans erreur");
 		psswd = new JPasswordField ("",15);
 
@@ -102,7 +99,7 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 		
 		label1.setForeground(Color.white);
 		
-		psswd.addKeyListener(new TimingManager(p,domaine));
+		psswd.addKeyListener(new TimingManager(p,domaine,psswd));
 		psswd.addKeyListener(new KeyListener(){
 
 			@Override
@@ -169,7 +166,7 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 		Insert.addCompte(p, domaine,passwordLength);
 		String generatedPassword = PasswordGetter.generatePassword(p.getUserID(),p.toString(),domaine,passwordLength);
 		Main.sessionManager.endCurrentSession();
-;
+
 	}
 	
 	private boolean checkSession(){

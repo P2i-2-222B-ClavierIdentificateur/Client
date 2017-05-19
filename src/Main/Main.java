@@ -5,13 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
-import GUI.BDGUI;
+import Database.ConnectionBD;
 import GUI.MenuGUI;
 import Session.SessionManager;
-import Warnings.SimpleWarning;
 
 
 public class Main {
@@ -25,8 +23,12 @@ public class Main {
 	public static SessionManager sessionManager;
 	
 	public static void main(String[] args) throws InterruptedException{
+		
+		ConnectionBD.connect();
+				
 		sessionManager =new SessionManager();
-	//	GUI initGui = new GUI(); //initialisation de l'interface
+		
+		//	GUI initGui = new GUI(); //initialisation de l'interface
 		MenuGUI mg = new MenuGUI(); 
 		
 		try {
@@ -50,6 +52,8 @@ public class Main {
 		while (tests == false){
 			Thread.sleep(1000);
 		}
+		
+		ConnectionBD.closeConnection();
 		
 		
 	}
