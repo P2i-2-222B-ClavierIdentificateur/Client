@@ -63,6 +63,47 @@ public class KeyStroke extends Key {
 		}
 		return chars;	
 	}
+	
+	public double euclidianDistance (KeyStroke k){
+		double dTimeUp = Math.pow(k.getTimeUp()-this.getTimeUp(), 2);
+		double dTimeDown = Math.pow(k.getTimeDown()-this.getTimeDown(), 2);
+		double dPressure = Math.pow(k.getPressure()-this.getPressure(), 2);
+		double dShiftUp = Math.pow(k.getShift().getTimeUp()-this.getShift().getTimeUp(), 2);
+		double dShiftDown = Math.pow(k.getShift().getTimeDown()-this.getShift().getTimeDown(), 2);
+		double dShiftLocation = Math.pow(k.getShift().getLocation()-this.getShift().getLocation(), 2); //pas sûr qu'une distance euclidienne soit adaptée
+		double dCtrlUp = Math.pow(k.getCtrl().getTimeUp()-this.getCtrl().getTimeUp(), 2);
+		double dCtrlDown = Math.pow(k.getCtrl().getTimeDown()-this.getCtrl().getTimeDown(), 2);
+		double dCtrlLocation = Math.pow(k.getCtrl().getLocation() - this.getCtrl().getLocation(), 2); //idem
+		double dAltUp = Math.pow(k.getAlt().getTimeUp()-this.getAlt().getTimeUp(), 2);
+		double dAltDown = Math.pow(k.getAlt().getTimeDown()-this.getAlt().getTimeDown(), 2);
+		double dAltLocation = Math.pow(k.getAlt().getLocation()-this.getAlt().getLocation(), 2); //idem
+		double dCapslockUp = Math.pow(k.getCapsLock().getTimeUp()-this.getCapsLock().getTimeUp(), 2);
+		double dCapslockDown = Math.pow(k.getCapsLock().getTimeDown()-this.getCapsLock().getTimeDown(), 2);
+
+		return Math.sqrt(dTimeUp+dTimeDown+dPressure+dShiftUp+dShiftDown+dShiftLocation+dCtrlUp+dCtrlDown+dCtrlLocation
+				+dAltUp+dAltDown+dAltLocation+dCapslockUp+ dCapslockDown);
+
+	}
+	
+	public double manhattanDistance(KeyStroke k){
+		double dTimeUp = Math.abs(k.getTimeUp()-this.getTimeUp());
+		double dTimeDown = Math.abs(k.getTimeDown()-this.getTimeDown());
+		double dPressure = Math.abs(k.getPressure()-this.getPressure());
+		double dShiftUp = Math.abs(k.getShift().getTimeUp()-this.getShift().getTimeUp());
+		double dShiftDown = Math.abs(k.getShift().getTimeDown()-this.getShift().getTimeDown());
+		double dShiftLocation = Math.abs(k.getShift().getLocation()-this.getShift().getLocation());
+		double dCtrlUp = Math.abs(k.getCtrl().getTimeUp()-this.getCtrl().getTimeUp());
+		double dCtrlDown = Math.abs(k.getCtrl().getTimeDown()-this.getCtrl().getTimeDown());
+		double dCtrlLocation = Math.abs(k.getCtrl().getLocation() - this.getCtrl().getLocation());
+		double dAltUp = Math.abs(k.getAlt().getTimeUp()-this.getAlt().getTimeUp());
+		double dAltDown = Math.abs(k.getAlt().getTimeDown()-this.getAlt().getTimeDown());
+		double dAltLocation = Math.abs(k.getAlt().getLocation()-this.getAlt().getLocation());
+		double dCapslockUp = Math.abs(k.getCapsLock().getTimeUp()-this.getCapsLock().getTimeUp());
+		double dCapslockDown = Math.abs(k.getCapsLock().getTimeDown()-this.getCapsLock().getTimeDown());
+
+		return (dTimeUp+dTimeDown+dPressure+dShiftUp+dShiftDown+dShiftLocation+dCtrlUp+dCtrlDown+dCtrlLocation
+				+dAltUp+dAltDown+dAltLocation+dCapslockUp+dCapslockDown);
+	}
 
 	public double getPressure() {
 		return pressure;

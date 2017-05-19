@@ -2,15 +2,16 @@ package Analyse;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import Database.Request;
+import KeystrokeMeasuring.KeyStroke;
 import Main.Password;
-import Encryption.Encryption;
 
 public class Reference {
 	
-	LinkedList <VectorSet>sets;
+	LinkedList <KeyStrokeSet> sets;
 	LinkedList<Double> avgEuclidianDistance;
 	LinkedList<Double>avgManhattanDistance;
 	int[] usedRows;
@@ -34,36 +35,23 @@ public class Reference {
 		}
 	}
 	
-	private void buildSets(String password){
-		sets = new LinkedList<VectorSet>();
+	private void buildSets(Password p){
+		sets = new LinkedList<KeyStrokeSet>();
 		for (int i=0; i<usedRows.length; i++){
 			ResultSet keys = Request.getTouchesForEntry(usedRows[i]);
-			LinkedList <Vector> set = new LinkedList<Vector>();
+			LinkedList <KeyStroke> set = new LinkedList<KeyStroke>();
+			ArrayList<String> tempEncryptedValues = new ArrayList<String>();
 			try {
 				while(keys.next()){
-					int tu = Encryption.decryptInt(keys.getString("timeUp"),password);
-					int td = Encryption.decryptInt(keys.getString("timeDown"),password);
-					int p = Encryption.decryptInt(keys.getString("Pressure"),password);
-					int ms = Encryption.decryptInt(keys.getString("modifierSequence"),password);
-					int su = Encryption.decryptInt(keys.getString("shiftUp"),password);
-					int sd = Encryption.decryptInt(keys.getString("shiftDown"),password);
-					int sl = Encryption.decryptInt(keys.getString("shiftLocation"),password);
-					int cu = Encryption.decryptInt(keys.getString("ctrlUp"),password);
-					int cd = Encryption.decryptInt(keys.getString("ctrlDown"),password);
-					int cl = Encryption.decryptInt(keys.getString("ctrlLocation"),password);
-					int au = Encryption.decryptInt(keys.getString("altUp"),password);
-					int ad = Encryption.decryptInt(keys.getString("altDown"),password);
-					int al = Encryption.decryptInt(keys.getString("altLcation"),password);
-					int cpu = Encryption.decryptInt(keys.getString("capsLockUp"),password);
-					int cpd = Encryption.decryptInt(keys.getString("capsLockDown"),password);
-					set.add(new Vector(tu,td,p,su,sd,sl,cu,cd,cl,au,ad,al,cpu,cpd));
-
+					for(int j=1; j<=keys.getMetaData().getColumnCount(); j++)
+						tempEncryptedValues.add(keys.getString(j)); //on récupère toutes les données pour un caractère
+					set.add(new KeyStroke(tempEncryptedValues,p)); //on crée un nouveau caractère
+					set.clear(); 
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			sets.add(new VectorSet(set));
+			sets.add(new KeyStrokeSet(set));
 		}
 	}
 	
