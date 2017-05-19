@@ -18,6 +18,7 @@ public class Reference {
 	
 	public Reference (Password p, String domain, String systemLogin){
 		getRows(p.getUserID(),domain);
+		buildSets(p);
 	}
 	
 	private void getRows(String login, String domain){
@@ -35,6 +36,10 @@ public class Reference {
 		}
 	}
 	
+	/**
+	 * Crée l'historique des entrées réussies
+	 * @param p le mot de passe qui sert au déchiffrement des données
+	 */
 	private void buildSets(Password p){
 		sets = new LinkedList<KeyStrokeSet>();
 		for (int i=0; i<usedRows.length; i++){
@@ -43,7 +48,7 @@ public class Reference {
 			ArrayList<String> tempEncryptedValues = new ArrayList<String>();
 			try {
 				while(keys.next()){
-					for(int j=1; j<=keys.getMetaData().getColumnCount(); j++)
+					for(int j=2; j<=keys.getMetaData().getColumnCount(); j++) //on part de 2 pour éliminer l'index
 						tempEncryptedValues.add(keys.getString(j)); //on récupère toutes les données pour un caractère
 					set.add(new KeyStroke(tempEncryptedValues,p)); //on crée un nouveau caractère
 					set.clear(); 
