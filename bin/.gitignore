@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/GUI/
-/Database/
-=======
 /Main/
-/GUI/
-/KeystrokeMeasuring/
->>>>>>> a5153b0c41c7e1ef6b9772fcc30f7b0fb029f82f
-/Encryption/
-/GUIElements/
-/Session/
 /Sync/
-/Warnings/
+/KeystrokeMeasuring/
+/GUI/
 /Analyse/
-/Arduino/
+/Database/
+/Encryption/

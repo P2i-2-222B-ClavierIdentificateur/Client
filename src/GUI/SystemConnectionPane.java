@@ -50,16 +50,7 @@ public class SystemConnectionPane extends JPanel{
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 				if (arg0.getKeyCode() == KeyEvent.VK_ENTER){
-					String dbPassword = Request.getPasswordForSystemAccount(loginField.getText(),Main.conn);
-					if(Encryption.checkPassword(dbPassword,new String (passwordField.getPassword()))){
-						Main.currentSystemAccount = new SystemAccount (loginField.getText());
-						System.out.println("Vous êtes connecté en tant que " + loginField.getText());
-						frame.showMenuPane();
-						frame.hideSystemConnectionPane();
-					}else{
-						new SimpleWarning("Echec de la connection");
-						passwordField.setText("");
-					}
+					tryConnection(loginField,passwordField);
 				}
 			}
 
@@ -83,16 +74,8 @@ public class SystemConnectionPane extends JPanel{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String dbPassword = Request.getPasswordForSystemAccount(loginField.getText(),Main.conn);
-				if(Encryption.checkPassword(dbPassword,new String (passwordField.getPassword()))){
-					Main.currentSystemAccount = new SystemAccount (loginField.getText());
-					System.out.println("Vous êtes connecté en tant que " + loginField.getText());
-					frame.showMenuPane();
-					frame.hideSystemConnectionPane();
-				}else{
-					new SimpleWarning("Echec de la connection");
-					passwordField.setText("");
-				}
+				tryConnection(loginField,passwordField);
+
 			}
 			
 		});
@@ -129,6 +112,33 @@ public class SystemConnectionPane extends JPanel{
 		
 		setVisible(false);
 
+	}
+	
+	private void tryConnection(JTextField loginField, JPasswordField passwordField){
+		String login = loginField.getText();
+		if(login.endsWith(" ")){
+			int i = login.length()-1;
+			do{
+				i--;
+			}
+			while(login.charAt(i)==' ' && i>0);
+			login = login.substring(0, i+1);
+		}
+		if(login.length()>2){
+			System.out.println("!"+login+"!");
+			String dbPassword = Request.getPasswordForSystemAccount(login,Main.conn);
+			if(Encryption.checkPassword(dbPassword,new String (passwordField.getPassword()))){
+				Main.currentSystemAccount = new SystemAccount (login);
+				System.out.println("Vous êtes connecté en tant que " + login);
+				frame.showMenuPane();
+				frame.hideSystemConnectionPane();
+			}else{
+				new SimpleWarning("Echec de la connection");
+				passwordField.setText("");
+			}
+		}else{
+			new SimpleWarning("L'identifiant trop court");
+		}
 	}
 
 }

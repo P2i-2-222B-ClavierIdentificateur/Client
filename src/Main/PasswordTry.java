@@ -19,19 +19,17 @@ public class PasswordTry {
 
 	@SuppressWarnings("unchecked")
 	public PasswordTry(ArrayList <KeyStroke> keys){
-		this.keys=(ArrayList<KeyStroke>) keys.clone();
-		Collections.copy(this.keys,keys);
+		this.keys=new ArrayList<KeyStroke>(keys);
 	}
 	
 	
 	public KeyStrokeSet toKeyStrokeSet(){
-		LinkedList l = new LinkedList();
-		l.addAll(keys);
+		LinkedList l = new LinkedList(keys);
 		return new KeyStrokeSet( l);
 	}
 	public PasswordTry(ArrayList <KeyStroke> keys, boolean success){
 
-		this.keys = keys;
+		this.keys=new ArrayList<KeyStroke>(keys);
 	}
 	
 	public ArrayList<KeyStroke> getKeys() {

@@ -23,6 +23,8 @@ public class KeyStroke extends Key {
 	
 	public KeyStroke(ArrayList<String> encryptedValues, Password p){
 		super(Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())), Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())));
+		//System.out.println(" déchiffé " +Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())));
+
 		setPressure(Encryption.decryptValue(encryptedValues.get(2), new String(p.getPassword())));
 		setModifierSequence(Encryption.decryptInt(encryptedValues.get(3), new String(p.getPassword())));
 		long tempDown=Encryption.decryptLong(encryptedValues.get(5), new String(p.getPassword()));
@@ -57,52 +59,57 @@ public class KeyStroke extends Key {
 		double[] values = getValuesArray();
 		double n = 0;
 		for(int i=0; i<values.length; i++){
-			n += Math.pow(values[i], 2);
+			n += Math.abs(values[i]);
 		}
 		return n;
 	}
 	
 	public double[] getValuesArray(){
 		double [] values = new double[15];
-		values[0] = super.getTimeUp();
-		values[1] = super.getTimeDown();
-		values[2] = getPressure();
-		values[3] = getModifierSequence();
-		if(shift != null){
-			values[4] = shift.getTimeUp();
-			values[5] = shift.getTimeDown();
-			values[6] = shift.getLocation();
-		}else{
-			values[4] = 0;
-			values[5] = 0;
-			values[6] = 0;
+		if(getNext()!=null){
+			values[0] = getNext().getTimeUp() - super.getTimeUp();
+			values[1] = getNext().getTimeDown()-super.getTimeDown();
+			values[2] = getNext().getPressure()-getPressure();
+			if(shift != null){
+				values[4] = getNext().getShift().getTimeUp()-shift.getTimeUp();
+				values[5] = getNext().getShift().getTimeDown()-shift.getTimeDown();
+				//values[6] = shift.getLocation();
+				values[6] = 0;
+			}else{
+				values[4] = 0;
+				values[5] = 0;
+				values[6] = 0;
+			}
+			if(ctrl!=null){
+				values[7] = getNext().getCtrl().getTimeUp()-ctrl.getTimeUp();
+				values[8] = getNext().getCtrl().getTimeDown()-ctrl.getTimeDown();
+				//values[9] = ctrl.getLocation();
+				values[9] = 0;
+			}else{
+				values[7] = 0;
+				values[8] = 0;
+				values[9] = 0;
+			}
+			if(alt!=null){
+				values[10] = getNext().getAlt().getTimeUp()- alt.getTimeUp();
+				values[11] = getNext().getAlt().getTimeDown()-alt.getTimeDown();
+				//values[12] = alt.getLocation();
+				values[12] =0;
+			}else{
+				values[10] = 0;
+				values[11] = 0;
+				values[12] = 0;
+			}
+			if(capsLock!=null){
+				values[13] = getNext().getCapsLock().getTimeUp()-capsLock.getTimeUp();
+				values[14] = getNext().getCapsLock().getTimeDown() - capsLock.getTimeDown();
+			}else{
+				values[13] = 0;
+				values[14] = 0;
+			}
 		}
-		if(ctrl!=null){
-			values[7] = ctrl.getTimeUp();
-			values[8] = ctrl.getTimeDown();
-			values[9] = ctrl.getLocation();
-		}else{
-			values[7] = 0;
-			values[8] = 0;
-			values[9] = 0;
-		}
-		if(alt!=null){
-			values[10] = alt.getTimeUp();
-			values[11] = alt.getTimeDown();
-			values[12] = alt.getLocation();
-		}else{
-			values[10] = 0;
-			values[11] = 0;
-			values[12] = 0;
-		}
-		if(capsLock!=null){
-			values[13] = capsLock.getTimeUp();
-			values[14] = capsLock.getTimeDown();
-		}else{
-			values[13] = 0;
-			values[14] = 0;
-		}
-		return values;
+			return values;
+
 }
 	
 	@Override
@@ -130,44 +137,80 @@ public class KeyStroke extends Key {
 	}
 	
 	public double euclidianDistance (KeyStroke k){
-		double dTimeUp = Math.pow(k.getTimeUp()-this.getTimeUp(), 2);
-		double dTimeDown = Math.pow(k.getTimeDown()-this.getTimeDown(), 2);
-		double dPressure = Math.pow(k.getPressure()-this.getPressure(), 2);
-		double dShiftUp = Math.pow(k.getShift().getTimeUp()-this.getShift().getTimeUp(), 2);
-		double dShiftDown = Math.pow(k.getShift().getTimeDown()-this.getShift().getTimeDown(), 2);
-		double dShiftLocation = Math.pow(k.getShift().getLocation()-this.getShift().getLocation(), 2); //pas s�r qu'une distance euclidienne soit adapt�e
-		double dCtrlUp = Math.pow(k.getCtrl().getTimeUp()-this.getCtrl().getTimeUp(), 2);
-		double dCtrlDown = Math.pow(k.getCtrl().getTimeDown()-this.getCtrl().getTimeDown(), 2);
-		double dCtrlLocation = Math.pow(k.getCtrl().getLocation() - this.getCtrl().getLocation(), 2); //idem
-		double dAltUp = Math.pow(k.getAlt().getTimeUp()-this.getAlt().getTimeUp(), 2);
-		double dAltDown = Math.pow(k.getAlt().getTimeDown()-this.getAlt().getTimeDown(), 2);
-		double dAltLocation = Math.pow(k.getAlt().getLocation()-this.getAlt().getLocation(), 2); //idem
-		double dCapslockUp = Math.pow(k.getCapsLock().getTimeUp()-this.getCapsLock().getTimeUp(), 2);
-		double dCapslockDown = Math.pow(k.getCapsLock().getTimeDown()-this.getCapsLock().getTimeDown(), 2);
+		double result,dTimeUp,dTimeDown,dPressure,dShiftUp = 0,dShiftDown = 0,dShiftLocation = 0,dCtrlUp = 0,dCtrlDown = 0,dCtrlLocation = 0,
+			dAltUp = 0,dAltDown = 0,dAltLocation = 0,dCapslockUp = 0,dCapslockDown = 0;
+		if (k.getNext()!=null & this.next!=null){
+			 dTimeUp = Math.pow((k.getNext().getTimeUp()-k.getTimeUp())-(this.getNext().getTimeUp()-this.getTimeUp()), 2);
+			 dTimeDown = Math.pow((k.getNext().getTimeDown()-k.getTimeDown())-(this.getNext().getTimeDown()-this.getTimeDown()), 2);
+			 dPressure = Math.pow((k.getNext().getPressure()-k.getPressure())-(this.getNext().getPressure()-this.getPressure()), 2);
+			if(k.getShift()!=null && k.getNext().getShift()!=null && this.getShift()!=null && this.getNext().getShift()!=null){
+				 dShiftUp = Math.pow((k.getNext().getShift().getTimeUp() - k.getShift().getTimeUp())-(this.getNext().getShift().getTimeUp()-this.getShift().getTimeUp()), 2);
+				 dShiftDown = Math.pow((k.getNext().getShift().getTimeDown() - k.getShift().getTimeDown())-(this.getNext().getShift().getTimeDown()-this.getShift().getTimeDown()), 2);
+				// dShiftLocation = Math.pow((k.getNext().getShift().getLocation()-k.getShift().getLocation())-(this.getNext().getShift().getLocation()-this.getShift().getLocation()), 2); //pas s�r qu'une distance euclidienne soit adapt�e
+			}
+			if(k.getCtrl()!=null && k.getNext().getCtrl()!=null && this.getCtrl()!=null && this.getNext().getCtrl()!=null){
+				 dCtrlUp = Math.pow((k.getNext().getCtrl().getTimeUp()-k.getCtrl().getTimeUp())-(this.getNext().getCtrl().getTimeUp()-this.getCtrl().getTimeUp()), 2);
+				 dCtrlDown = Math.pow((k.getNext().getCtrl().getTimeDown()-k.getCtrl().getTimeDown())-(this.getNext().getCtrl().getTimeDown()-this.getCtrl().getTimeDown()), 2);
+				// dCtrlLocation = Math.pow((k.getNext().getCtrl().getLocation() - k.getCtrl().getLocation()) - (this.getNext().getCtrl().getLocation()-this.getCtrl().getLocation()), 2); //idem
+			}
+			if(k.getAlt()!=null && k.getNext().getAlt()!=null && this.getAlt()!=null && this.getNext().getAlt()!=null){
+				 dAltUp = Math.pow((k.getNext().getAlt().getTimeUp()-k.getAlt().getTimeUp()) - (this.getNext().getAlt().getTimeUp() - this.getAlt().getTimeUp()), 2);
+				 dAltDown = Math.pow((k.getNext().getAlt().getTimeDown()-k.getAlt().getTimeDown()) - (this.getNext().getAlt().getTimeDown() - this.getAlt().getTimeDown()), 2);
+				// dAltLocation = Math.pow((k.getNext().getAlt().getLocation()-k.getAlt().getLocation())-(this.getNext().getAlt().getLocation() - this.getAlt().getLocation()), 2); //idem	
+			}
+			if(k.getCapsLock()!=null && k.getNext().getCapsLock()!=null && this.getCapsLock()!=null && this.getNext().getCapsLock()!=null){
+				 dCapslockUp = Math.pow((k.getNext().getCapsLock().getTimeUp() - k.getCapsLock().getTimeUp())-(this.getNext().getCapsLock().getTimeUp()-this.getCapsLock().getTimeUp()), 2);
+				 dCapslockDown = Math.pow((k.getNext().getCapsLock().getTimeDown()-k.getCapsLock().getTimeDown())-(this.getNext().getCapsLock().getTimeDown()-this.getCapsLock().getTimeDown()), 2);
+			}
+			result = Math.sqrt(dTimeUp+dTimeDown+dPressure+dShiftUp+dShiftDown+dShiftLocation+dCtrlUp+dCtrlDown+dCtrlLocation
+					+dAltUp+dAltDown+dAltLocation+dCapslockUp+ dCapslockDown);
+		}else{
+			result = 0;
+		}
 
-		return Math.sqrt(dTimeUp+dTimeDown+dPressure+dShiftUp+dShiftDown+dShiftLocation+dCtrlUp+dCtrlDown+dCtrlLocation
-				+dAltUp+dAltDown+dAltLocation+dCapslockUp+ dCapslockDown);
+		System.out.println(result);
+		return result;
 
 	}
 	
 	public double manhattanDistance(KeyStroke k){
-		double dTimeUp = Math.abs(k.getTimeUp()-this.getTimeUp());
-		double dTimeDown = Math.abs(k.getTimeDown()-this.getTimeDown());
-		double dPressure = Math.abs(k.getPressure()-this.getPressure());
-		double dShiftUp = Math.abs(k.getShift().getTimeUp()-this.getShift().getTimeUp());
-		double dShiftDown = Math.abs(k.getShift().getTimeDown()-this.getShift().getTimeDown());
-		double dShiftLocation = Math.abs(k.getShift().getLocation()-this.getShift().getLocation());
-		double dCtrlUp = Math.abs(k.getCtrl().getTimeUp()-this.getCtrl().getTimeUp());
-		double dCtrlDown = Math.abs(k.getCtrl().getTimeDown()-this.getCtrl().getTimeDown());
-		double dCtrlLocation = Math.abs(k.getCtrl().getLocation() - this.getCtrl().getLocation());
-		double dAltUp = Math.abs(k.getAlt().getTimeUp()-this.getAlt().getTimeUp());
-		double dAltDown = Math.abs(k.getAlt().getTimeDown()-this.getAlt().getTimeDown());
-		double dAltLocation = Math.abs(k.getAlt().getLocation()-this.getAlt().getLocation());
-		double dCapslockUp = Math.abs(k.getCapsLock().getTimeUp()-this.getCapsLock().getTimeUp());
-		double dCapslockDown = Math.abs(k.getCapsLock().getTimeDown()-this.getCapsLock().getTimeDown());
+		double result,dTimeUp,dTimeDown,dPressure,dShiftUp = 0,dShiftDown = 0,dShiftLocation = 0,dCtrlUp = 0,dCtrlDown = 0,dCtrlLocation = 0,
+				dAltUp = 0,dAltDown = 0,dAltLocation = 0,dCapslockUp = 0,dCapslockDown = 0;
+		if (k.getNext()!=null & this.next!=null){
+			 dTimeUp = Math.abs((k.getNext().getTimeUp()-k.getTimeUp())-(this.getNext().getTimeUp()-this.getTimeUp()));
+			 dTimeDown = Math.abs((k.getNext().getTimeDown()-k.getTimeDown())-(this.getNext().getTimeDown()-this.getTimeDown()));
+			 dPressure = Math.abs((k.getNext().getPressure()-k.getPressure())-(this.getNext().getPressure()-this.getPressure()));
+			if(k.getShift()!=null && k.getNext().getShift()!=null && this.getShift()!=null && this.getNext().getShift()!=null){
 
-		return (dTimeUp+dTimeDown+dPressure+dShiftUp+dShiftDown+dShiftLocation+dCtrlUp+dCtrlDown+dCtrlLocation
-				+dAltUp+dAltDown+dAltLocation+dCapslockUp+dCapslockDown);
+				 dShiftUp = Math.abs((k.getNext().getShift().getTimeUp() - k.getShift().getTimeUp())-(this.getNext().getShift().getTimeUp()-this.getShift().getTimeUp()));
+				 dShiftDown = Math.abs((k.getNext().getShift().getTimeDown() - k.getShift().getTimeDown())-(this.getNext().getShift().getTimeDown()-this.getShift().getTimeDown()));
+				// dShiftLocation = Math.abs((k.getNext().getShift().getLocation()-k.getShift().getLocation())-(this.getNext().getShift().getLocation()-this.getShift().getLocation())); //pas s�r qu'une distance euclidienne soit adapt�e
+			}
+			if(k.getCtrl()!=null && k.getNext().getCtrl()!=null && this.getCtrl()!=null && this.getNext().getCtrl()!=null){
+
+				 dCtrlUp = Math.abs((k.getNext().getCtrl().getTimeUp()-k.getCtrl().getTimeUp())-(this.getNext().getCtrl().getTimeUp()-this.getCtrl().getTimeUp()));
+				 dCtrlDown = Math.abs((k.getNext().getCtrl().getTimeDown()-k.getCtrl().getTimeDown())-(this.getNext().getCtrl().getTimeDown()-this.getCtrl().getTimeDown()));
+				// dCtrlLocation = Math.abs((k.getNext().getCtrl().getLocation() - k.getCtrl().getLocation()) - (this.getNext().getCtrl().getLocation()-this.getCtrl().getLocation())); //idem
+			}
+			if(k.getAlt()!=null && k.getNext().getAlt()!=null && this.getAlt()!=null && this.getNext().getAlt()!=null){
+
+				 dAltUp = Math.abs((k.getNext().getAlt().getTimeUp()-k.getAlt().getTimeUp()) - (this.getNext().getAlt().getTimeUp() - this.getAlt().getTimeUp()));
+				 dAltDown = Math.abs((k.getNext().getAlt().getTimeDown()-k.getAlt().getTimeDown()) - (this.getNext().getAlt().getTimeDown() - this.getAlt().getTimeDown()));
+				// dAltLocation = Math.abs((k.getNext().getAlt().getLocation()-k.getAlt().getLocation())-(this.getNext().getAlt().getLocation() - this.getAlt().getLocation())); //idem
+			}
+			if(k.getCapsLock()!=null && k.getNext().getCapsLock()!=null && this.getCapsLock()!=null && this.getNext().getCapsLock()!=null){
+	
+				 dCapslockUp = Math.abs((k.getNext().getCapsLock().getTimeUp() - k.getCapsLock().getTimeUp())-(this.getNext().getCapsLock().getTimeUp()-this.getCapsLock().getTimeUp()));
+				dCapslockDown = Math.abs((k.getNext().getCapsLock().getTimeDown()-k.getCapsLock().getTimeDown())-(this.getNext().getCapsLock().getTimeDown()-this.getCapsLock().getTimeDown()));
+			}
+			
+			result = (dTimeUp+dTimeDown+dPressure+dShiftUp+dShiftDown+dShiftLocation+dCtrlUp+dCtrlDown+dCtrlLocation
+									+dAltUp+dAltDown+dAltLocation+dCapslockUp+ dCapslockDown);
+		}else{
+			result = 0;
+		}
+		System.out.println(result);
+		return result;
 	}
 	
 	
@@ -256,6 +299,7 @@ public class KeyStroke extends Key {
 
 	public void setShift(Modifier shift) {
 		this.shift = shift;
+		if(shift!=null)
 		this.shift.setAssociatedKeyStroke(this);
 	}
 
@@ -265,6 +309,7 @@ public class KeyStroke extends Key {
 
 	public void setCtrl(Modifier ctrl) {
 		this.ctrl = ctrl;
+		if(ctrl!=null)
 		this.ctrl.setAssociatedKeyStroke(this);
 	}
 
@@ -274,6 +319,7 @@ public class KeyStroke extends Key {
 
 	public void setAlt(Modifier alt) {
 		this.alt = alt;
+		if(alt!=null)
 		this.alt.setAssociatedKeyStroke(this);
 	}
 
@@ -283,6 +329,7 @@ public class KeyStroke extends Key {
 
 	public void setCapsLock(Modifier capsLock) {
 		this.capsLock = capsLock;
+		if(capsLock!=null)
 		this.capsLock.setAssociatedKeyStroke(this);
 	}
 

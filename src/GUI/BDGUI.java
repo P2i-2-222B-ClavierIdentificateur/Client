@@ -30,7 +30,6 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 	int passwordLength;
 	public JPanel progressBar;
 	
-	TimingManager timingManager;
 	
 	MenuGUI f;
 	int validTries = 0;
@@ -44,7 +43,6 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 		this.passwordLength = passwordLength;
 		System.out.println(userID);
 		entries = new Entry[15];	
-		timingManager = new TimingManager(p,domaine,psswd);
 		JLabel label1 = new JLabel ("Saisir le mot de passe 15 fois sans erreur");
 		psswd = new JPasswordField ("",15);
 
@@ -72,8 +70,9 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 		progressBar.repaint();
 		
 		label1.setForeground(Color.white);
+		TimingManager timingManager = new TimingManager(p,domaine,psswd);
 		
-		psswd.addKeyListener(new TimingManager(p,domaine,psswd));
+		psswd.addKeyListener(timingManager);
 		psswd.addKeyListener(new KeyListener(){
 
 			@Override
@@ -88,6 +87,9 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 					}
 						psswd.setText("");
 						progressBar.repaint();
+						timingManager.getKeyStrokes().clear();
+						timingManager.getStrokes().clear();
+						//System.out.println("KeyStrokes : " +timingManager.getKeyStrokes().size() + " Strokes : " + timingManager.getStrokes().size());
 
 					}else if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE){
 						psswd.setText("");

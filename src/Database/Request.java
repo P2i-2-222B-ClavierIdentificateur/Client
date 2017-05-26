@@ -70,9 +70,8 @@ public class Request {
 		String request = "Select * From Touche Where Touche.Entree_Index = ?;";
 
 		
-		
-		
         ResultSet res= null;
+        //System.out.println("test for entree : " + entryIndex);
         
         ArrayList<ArrayList> keys = new ArrayList<ArrayList>(16);
         try {
@@ -83,13 +82,16 @@ public class Request {
 		        ArrayList<String> values = new ArrayList<String>(16);
 		        for(int i = 2;i<17;i++){
 		        	values.add(res.getString(i));
+		        	//System.out.println("String : " + res.getString(i));
 		        }
+		       // System.out.println("values" + values.size());
 		        keys.add(values);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        //System.out.println("keys before return : " + keys.size());
         return keys;
         
 	}

@@ -36,6 +36,8 @@ public class Insert {
        
        
        try {
+    	   Statement begin = conn.createStatement();
+			begin.executeQuery("Start Transaction;");
 			PreparedStatement compteStatement = conn.prepareStatement(compte);
 			compteStatement.setString(1, String.valueOf(eLogin));
 			compteStatement.setString(2, ePassword);
@@ -44,6 +46,8 @@ public class Insert {
 			compteStatement.setString(5, String.valueOf(Main.currentSystemAccount.getLogin().hashCode()));
 			compteStatement.executeUpdate();
 			System.out.println("Compte ajouté");
+			Statement commit = conn.createStatement();
+	        commit.executeQuery("Commit;");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Erreur lors de l'ajout du compte");
@@ -90,6 +94,8 @@ public class Insert {
         Statement accountStatement;
 		try {
 			accountStatement = conn.createStatement();
+			Statement begin = conn.createStatement();
+			begin.executeQuery("Start Transaction;");
 			 res =accountStatement.executeQuery(account);
 		        
 		        int accountId = 0;
@@ -110,6 +116,7 @@ public class Insert {
 				}
 				System.out.println("Ajout des donnéees");
 				for (int i=0; i<s.getPasswordTries().size();i++){
+					System.out.println("Ajout entree " + i+" pour la session " +sessionId );
 					PreparedStatement entreeStatement = conn.prepareStatement(entree);
 					entreeStatement.setInt(1,sessionId);
 					entreeStatement.setString(2,s.getLocal());
@@ -126,8 +133,10 @@ public class Insert {
 					
 					String allTouche = touche + String.join(",", Collections.nCopies(s.getPasswordTries().get(i).getKeys().size()-1, toucheValues))+";";
 					PreparedStatement toucheStatement = conn.prepareStatement(allTouche);
+					System.out.println("Size " + s.getPasswordTries().get(i).getKeys().size());
 
 					for(int j=0; j<s.getPasswordTries().get(i).getKeys().size();j++){
+						//System.out.println("Ajout de la touche " + j + " pour l'entree " + entreeId);
 						ArrayList<String>encryptedValues = s.getPasswordTries().get(i).getKeys().get(j).getEncryptedValues(new Password(
 								s.getPassword().toCharArray(),s.getUserId()));
 						toucheStatement.setInt(j*16+1,entreeId);
@@ -145,7 +154,7 @@ public class Insert {
 						}
 
 					}
-					toucheStatement.executeUpdate();
+					System.out.println(toucheStatement.executeUpdate());
 
 				}
 		} catch (SQLException e) {
@@ -154,6 +163,15 @@ public class Insert {
 		}
        
         System.out.println("Session ajoutée");
+        Statement commit;
+		try {
+			commit = conn.createStatement();
+	        commit.executeQuery("Commit;");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
        
        
 	}
@@ -169,6 +187,8 @@ public static String addCompteSystem(String identifiant, String password,Connect
 		String getLogin = "SELECT Login FROM CompteSystem";
         
         try { //on verifie que la cle (login) n existe pas deja
+        	Statement begin = conn.createStatement();
+    		begin.executeQuery("Start Transaction;");
 			ps = conn.createStatement();
 			res =ps.executeQuery(getLogin);
 			while(res.next()){
@@ -208,6 +228,8 @@ public static String addCompteSystem(String identifiant, String password,Connect
 	
 	        try {
 	        	insertAccountSystem.executeUpdate();
+	        	Statement commit = conn.createStatement();
+		        commit.executeQuery("Commit;");
 				
 			} catch (SQLException e1) {
 				System.err.println("Could not execute updates");

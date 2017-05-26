@@ -44,8 +44,10 @@ public class AddAccountGUI extends JPanel {
 	JLabel passwordLengthLabel;
 	JTextField passwordLengthField;
 	JSlider passwordLengthSlider;
+	MenuGUI f;
 	
 	public AddAccountGUI(final JPanel menuPane,final MenuGUI f){
+		this.f=f;
 		setBackground(Color.darkGray);
 		layout = (SpringLayout) menuPane.getLayout();
 	//	setResizable(false);
@@ -79,27 +81,8 @@ public class AddAccountGUI extends JPanel {
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
-					// on verifie que les deux mots de passe correspondent
-					psswdMatch = Main.passwordMatch(txt1.getPassword(),txt2.getPassword());
-					if(psswdMatch == true){ //si oui on passe a la suite
-						if(txt1.getPassword().length>=8){
-							initPsswd.setVisible(false);
-							Main.p = new Password (txt2.getPassword(),userIdField.getText());
-							Main.userId = userIdField.getText();
-							f.initBdGui(Main.p,domainField.getText(),passwordLengthSlider.getValue());
-							Main.sessionManager.getCurrentSession().setUserId(userIdField.getText());
-							Main.sessionManager.getCurrentSession().setDomain(domainField.getText());
-							Main.sessionManager.getCurrentSession().setPassword(new String (txt1.getPassword()));
-							setVisible(false);
-						}else {
-							new SimpleWarning("Mot de passe trop court \n min: 8");
-						}
-					}else{ // sinon on recommence
-						new SimpleWarning("Les mots de passe ne correspondent pas");
+					tryCreateAccount();
 
-						txt1.setText("");
-						txt2.setText("");
-					}
 				}
 				
 			}
@@ -123,20 +106,7 @@ public class AddAccountGUI extends JPanel {
 		button1.setSize(15,10);
 		button1.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				psswdMatch = Main.passwordMatch(txt1.getPassword(), txt2.getPassword())	;
-				if (psswdMatch == true){
-					Main.p = new Password (txt2.getPassword(),userIdField.getText());
-					Main.userId = userIdField.getText();
-					f.initBdGui(Main.p,domainField.getText(),passwordLengthSlider.getValue());
-					Main.sessionManager.getCurrentSession().setUserId(userIdField.getText());
-					Main.sessionManager.getCurrentSession().setDomain(domainField.getText());
-					Main.sessionManager.getCurrentSession().setPassword(new String (txt1.getPassword()));
-
-					setVisible(false);
-				}else{
-					txt1.setText("");
-					txt2.setText("");
-				}
+				tryCreateAccount();
 			}
 		});
 		
@@ -262,6 +232,53 @@ public class AddAccountGUI extends JPanel {
 		
 		//setContentPane(mainPanel);
 		setVisible(false);
+	}
+	
+	private void tryCreateAccount(){
+		// on verifie que les deux mots de passe correspondent
+		psswdMatch = Main.passwordMatch(txt1.getPassword(),txt2.getPassword());
+		if(psswdMatch == true){ //si oui on passe a la suite
+			if(txt1.getPassword().length>=8){
+				String login = userIdField.getText();
+				if(login.endsWith(" ")){
+					int i = login.length()-1;
+					do{
+						i--;
+					}
+					while(login.charAt(i)==' ');
+					login = login.substring(0, i+1);
+				} 
+				String domain = domainField.getText();
+				if(domain.endsWith(" ")){
+					int i = domain.length()-1;
+					do{
+						i--;
+					}
+					while(domain.charAt(i)==' ');
+					domain = domain.substring(0, i+1);
+				}
+					if(login.length()>2 && domain.length()>2){
+					initPsswd.setVisible(false);
+					Main.p = new Password (txt2.getPassword(),userIdField.getText());
+					Main.userId = userIdField.getText();
+					f.initBdGui(Main.p,domainField.getText(),passwordLengthSlider.getValue());
+					Main.sessionManager.getCurrentSession().setUserId(login);
+					Main.sessionManager.getCurrentSession().setDomain(domain);
+					Main.sessionManager.getCurrentSession().setPassword(new String (txt1.getPassword()));
+					setVisible(false);
+				}else{
+					new SimpleWarning("L'un des champs est trop court");
+				}
+			}else {
+				new SimpleWarning("Mot de passe trop court \n min: 8");
+			}
+		}else{ // sinon on recommence
+			new SimpleWarning("Les mots de passe ne correspondent pas");
+
+			txt1.setText("");
+			txt2.setText("");
+		}
+	
 	}
 	
 

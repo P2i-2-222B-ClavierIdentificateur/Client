@@ -1,5 +1,6 @@
 package Encryption;
 
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
@@ -38,7 +39,14 @@ public class Encryption {
 	public static long decryptLong (String encryptedValue, String password){
 		BasicTextEncryptor encryptor = new BasicTextEncryptor();
 		encryptor.setPassword(password);
-		Long decrypted = Long.valueOf(encryptor.decrypt(encryptedValue));
+		Long decrypted = (long) 0;
+		try{
+			decrypted = Long.valueOf(encryptor.decrypt(encryptedValue));
+		}catch(java.lang.NumberFormatException e){
+			return -1;
+		}catch(EncryptionOperationNotPossibleException e1){
+			return -1;
+		}
 		return decrypted;
 	}
 	
@@ -51,7 +59,14 @@ public class Encryption {
 	public static int decryptInt (String encryptedValue, String password){
 		BasicTextEncryptor encryptor = new BasicTextEncryptor();
 		encryptor.setPassword(password);
-		int decrypted = Integer.valueOf(encryptor.decrypt(encryptedValue));
+		int decrypted = 0;
+		try{
+			decrypted = Integer.valueOf(encryptor.decrypt(encryptedValue));
+		}catch(java.lang.NumberFormatException e){
+			return -1;
+		}catch(EncryptionOperationNotPossibleException e1){
+			return -1;
+		}
 		return decrypted;
 	}
 	

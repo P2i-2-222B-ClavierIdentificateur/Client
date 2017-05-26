@@ -21,6 +21,7 @@ import Database.Insert;
 import GUIElements.CancelButton;
 import Main.Main;
 import Main.SystemAccount;
+import Warnings.SimpleWarning;
 
 @SuppressWarnings("serial")
 public class CreateAccountSystem extends JPanel{
@@ -68,26 +69,8 @@ public class CreateAccountSystem extends JPanel{
 		connexion = new JButton ("Créer");
 		connexion.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				psswdMatch = Main.passwordMatch(passwordField1.getPassword(), passwordField2.getPassword())	;
-				String pswd = new String(passwordField1.getPassword());   
-				if (psswdMatch == true && (pswd.equals("")==false)){   //on verifie que les mdp sont les memes et qu'ils sont non nuls
-					java.sql.Connection conn = null;
-					try {
-						conn = DriverManager.getConnection("jdbc:mysql://5.196.123.198:3306/" + "P2I", "G222_B", "G222_B");
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					Insert.addCompteSystem(idField.getText(), pswd, conn);
-					Main.currentSystemAccount = new SystemAccount(idField.getText());
-					frame.hideCreateAccountSystem();
-					frame.showMenuPane();
-				}else{
-					JOptionPane.showMessageDialog(null, "Your passwords are diferent, try again");
-					passwordField1.setText("");
-					passwordField2.setText("");
-					
-				}
+				tryCreateAccount();
+
 			}
 		});
 		
@@ -96,26 +79,8 @@ public class CreateAccountSystem extends JPanel{
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
-					psswdMatch = Main.passwordMatch(passwordField1.getPassword(), passwordField2.getPassword())	;
-					String pswd = new String(passwordField1.getPassword());   
-					if (psswdMatch == true && (pswd.equals("")==false)){   //on verifie que les mdp sont les memes et qu'ils sont non nuls
-						java.sql.Connection conn = null;
-						try {
-							conn = DriverManager.getConnection("jdbc:mysql://5.196.123.198:3306/" + "P2I", "G222_B", "G222_B");
-						} catch (SQLException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-						Insert.addCompteSystem(idField.getText(), pswd, conn);
-						Main.currentSystemAccount = new SystemAccount(idField.getText());
-						frame.hideCreateAccountSystem();
-						frame.showMenuPane();
-					}else{
-						JOptionPane.showMessageDialog(null, "Your passwords are diferent, try again");
-						passwordField1.setText("");
-						passwordField2.setText("");
-						
-					}
+					tryCreateAccount();
+				
 				}
 			}
 		
@@ -179,6 +144,36 @@ public class CreateAccountSystem extends JPanel{
 		
 		setVisible(false);
 		
+	}
+	
+	private void tryCreateAccount(){
+		psswdMatch = Main.passwordMatch(passwordField1.getPassword(), passwordField2.getPassword())	;
+		String pswd = new String(passwordField1.getPassword());  
+		String login = idField.getText();
+		if(login.endsWith(" ")){
+			int i = login.length()-1;
+			do{
+				i--;
+			}
+			while(login.charAt(i)==' ' && i>0);
+			login = login.substring(0, i+1);
+		} 
+		if(login.length()>2){
+			if (psswdMatch == true && (pswd.equals("")==false)){   //on verifie que les mdp sont les memes et qu'ils sont non nuls
+				
+				Insert.addCompteSystem(login, pswd, Main.conn);
+				Main.currentSystemAccount = new SystemAccount(login);
+				frame.hideCreateAccountSystem();
+				frame.showMenuPane();
+			}else{
+				JOptionPane.showMessageDialog(null, "Your passwords are diferent, try again");
+				passwordField1.setText("");
+				passwordField2.setText("");
+				
+			}
+		}else{
+			new SimpleWarning("L'identifiant trop court");
+		}
 	}
 	
 

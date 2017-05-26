@@ -8,8 +8,8 @@ import java.sql.Statement;
 public class SyncSQLRequests {
 	
 	public static int[] getMaxIndexes(Connection conn){
-		String query = "SELECT max(CompteSystem.Index),max(Compte.Index),max(Session.index),max(Entree.Index),"
-				+"max(Touche.Index) FROM CompteSystem,Compte,Session,Entree,Touche;";
+		String query = "SELECT max(Compte.Index),max(Session.index),max(Entree.Index),"
+				+" FROM CompteSystem,Compte,Session,Entree,Touche;";
 		ResultSet rs = null;
 		int[] t = new int[5];
 		try {
