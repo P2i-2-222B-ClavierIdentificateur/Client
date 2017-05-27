@@ -18,6 +18,7 @@ import javax.swing.SpringLayout;
 
 
 import Database.Insert;
+import Exception.AccountAlreadyExistsException;
 import GUIElements.CancelButton;
 import Main.Main;
 import Main.SystemAccount;
@@ -69,7 +70,12 @@ public class CreateAccountSystem extends JPanel{
 		connexion = new JButton ("Créer");
 		connexion.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				tryCreateAccount();
+				try {
+					tryCreateAccount();
+				} catch (AccountAlreadyExistsException e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+				}
 
 			}
 		});
@@ -79,7 +85,12 @@ public class CreateAccountSystem extends JPanel{
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
-					tryCreateAccount();
+					try {
+						tryCreateAccount();
+					} catch (AccountAlreadyExistsException e1) {
+						// TODO Auto-generated catch block
+						//e1.printStackTrace();
+					}
 				
 				}
 			}
@@ -146,7 +157,7 @@ public class CreateAccountSystem extends JPanel{
 		
 	}
 	
-	private void tryCreateAccount(){
+	private void tryCreateAccount() throws AccountAlreadyExistsException{
 		psswdMatch = Main.passwordMatch(passwordField1.getPassword(), passwordField2.getPassword())	;
 		String pswd = new String(passwordField1.getPassword());  
 		String login = idField.getText();
@@ -166,9 +177,10 @@ public class CreateAccountSystem extends JPanel{
 				frame.hideCreateAccountSystem();
 				frame.showMenuPane();
 			}else{
-				JOptionPane.showMessageDialog(null, "Your passwords are diferent, try again");
 				passwordField1.setText("");
 				passwordField2.setText("");
+				throw new AccountAlreadyExistsException();
+
 				
 			}
 		}else{

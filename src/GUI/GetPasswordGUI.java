@@ -18,6 +18,7 @@ import javax.swing.SpringLayout;
 
 import Analyse.DistanceTest;
 import Analyse.KeyStrokeSet;
+import Exception.BadLoginException;
 import GUIElements.CancelButton;
 import KeystrokeMeasuring.KeyStroke;
 import KeystrokeMeasuring.TimingManager;
@@ -153,7 +154,9 @@ public class GetPasswordGUI extends JPanel{
 		layout.putConstraint(SpringLayout.SOUTH, cancel, -10, SpringLayout.SOUTH, this);
 		layout.putConstraint(SpringLayout.WEST, cancel, 10, SpringLayout.HORIZONTAL_CENTER, this);
 		layout.putConstraint(SpringLayout.EAST, cancel, -10, SpringLayout.EAST, this);
-
+		
+		domainField.grabFocus();
+		domainField.requestFocus();
 		//setVisible(false);
 	}
 	
@@ -193,19 +196,32 @@ public class GetPasswordGUI extends JPanel{
 	
 			
 			int i = Main.sessionManager.getCurrentSession().getPasswordTries().size()-1;
-			if(DistanceTest.test(new KeyStrokeSet(ksl), idField.getText(),domainField.getText(), new String ( psswdField.getPassword()))){
-				Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
-				f.showPasswordPane(PasswordGetter.getPassword(new String(psswdField.getPassword()), login, domain));
-				Main.sessionManager.endCurrentSession();
+			try {
+				if(DistanceTest.test(new KeyStrokeSet(ksl), idField.getText(),domainField.getText(), new String ( psswdField.getPassword()))){
+					Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
+					f.showPasswordPane(PasswordGetter.getPassword(new String(psswdField.getPassword()), login, domain));
+					Main.sessionManager.endCurrentSession();
 
-			}else{
-				new SimpleWarning("Maniere d'ecrire non reconnue");
-				Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(false);
+				}else{
+					new SimpleWarning("Maniere d'ecrire non reconnue");
+					Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(false);
 
+				}
+			} catch (BadLoginException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
 			}
 		}else{
 			new SimpleWarning("L'un des champs est trop court");
 		}
+	}
+
+	public JTextField getDomainField() {
+		return domainField;
+	}
+
+	public void setDomainField(JTextField domainField) {
+		this.domainField = domainField;
 	}
 
 }

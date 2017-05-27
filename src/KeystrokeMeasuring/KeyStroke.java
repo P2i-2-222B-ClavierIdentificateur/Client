@@ -6,6 +6,9 @@ import java.util.LinkedList;
 
 import Encryption.Encryption;
 import Main.Password;
+import Warnings.SimpleWarning;
+
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 public class KeyStroke extends Key {
 	
@@ -21,27 +24,29 @@ public class KeyStroke extends Key {
 		this.setNext(null);
 	}
 	
-	public KeyStroke(ArrayList<String> encryptedValues, Password p){
-		super(Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())), Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())));
-		setPressure(Encryption.decryptValue(encryptedValues.get(2), new String(p.getPassword())));
-		setModifierSequence(Encryption.decryptInt(encryptedValues.get(3), new String(p.getPassword())));
-		long tempDown=Encryption.decryptLong(encryptedValues.get(5), new String(p.getPassword()));
-		if(tempDown>=0){
-			setShift(new Modifier(Encryption.decryptLong(encryptedValues.get(4), new String(p.getPassword())), tempDown,Encryption.decryptInt(encryptedValues.get(6), new String(p.getPassword()))));
-		} else setShift(null);
-		tempDown=Encryption.decryptLong(encryptedValues.get(8), new String(p.getPassword()));
-		if(tempDown>=0){
-			setCtrl(new Modifier(Encryption.decryptLong(encryptedValues.get(7), new String(p.getPassword())), tempDown,Encryption.decryptInt(encryptedValues.get(9), new String(p.getPassword()))));
-		} else setCtrl(null);
-		tempDown=Encryption.decryptLong(encryptedValues.get(11), new String(p.getPassword()));
-		if(tempDown>=0){
-			setAlt(new Modifier(Encryption.decryptLong(encryptedValues.get(10), new String(p.getPassword())), tempDown,Encryption.decryptInt(encryptedValues.get(12), new String(p.getPassword()))));
-		} else setAlt(null);
-		tempDown=Encryption.decryptLong(encryptedValues.get(14), new String(p.getPassword()));
-		if(tempDown>=0){
-			setCapsLock(new Modifier(Encryption.decryptLong(encryptedValues.get(13), new String(p.getPassword())), tempDown));
-		} else setCapsLock(null);
+	public KeyStroke(ArrayList<String> encryptedValues, Password p) throws EncryptionOperationNotPossibleException {
 		
+			super(Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())), Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())));
+		
+			setPressure(Encryption.decryptValue(encryptedValues.get(2), new String(p.getPassword())));
+			setModifierSequence(Encryption.decryptInt(encryptedValues.get(3), new String(p.getPassword())));
+			long tempDown=Encryption.decryptLong(encryptedValues.get(5), new String(p.getPassword()));
+			if(tempDown>=0){
+				setShift(new Modifier(Encryption.decryptLong(encryptedValues.get(4), new String(p.getPassword())), tempDown,Encryption.decryptInt(encryptedValues.get(6), new String(p.getPassword()))));
+			} else setShift(null);
+			tempDown=Encryption.decryptLong(encryptedValues.get(8), new String(p.getPassword()));
+			if(tempDown>=0){
+				setCtrl(new Modifier(Encryption.decryptLong(encryptedValues.get(7), new String(p.getPassword())), tempDown,Encryption.decryptInt(encryptedValues.get(9), new String(p.getPassword()))));
+			} else setCtrl(null);
+			tempDown=Encryption.decryptLong(encryptedValues.get(11), new String(p.getPassword()));
+			if(tempDown>=0){
+				setAlt(new Modifier(Encryption.decryptLong(encryptedValues.get(10), new String(p.getPassword())), tempDown,Encryption.decryptInt(encryptedValues.get(12), new String(p.getPassword()))));
+			} else setAlt(null);
+			tempDown=Encryption.decryptLong(encryptedValues.get(14), new String(p.getPassword()));
+			if(tempDown>=0){
+				setCapsLock(new Modifier(Encryption.decryptLong(encryptedValues.get(13), new String(p.getPassword())), tempDown));
+			} else setCapsLock(null);
+
 	}
 	
 	public double getNorme2 (){

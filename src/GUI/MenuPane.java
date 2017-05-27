@@ -31,6 +31,7 @@ public class MenuPane extends JPanel{
 				// TODO Auto-generated method stub
 				setVisible(false);
 				f.createAccountPane.setVisible(true);
+				f.createAccountPane.getTxt1().grabFocus();
 			}
 			
 		});

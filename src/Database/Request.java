@@ -154,6 +154,31 @@ public class Request {
 			return "";
 		}
 	}
+	
+	public static boolean checkIfAccountExists(String sysLogin, String login, String domain,Connection conn){
+		int sysLoginHash = sysLogin.hashCode();
+		int loginHash = login.hashCode();
+		int domainHash = domain.hashCode();
+		
+		String query = "Select Compte.domainHash From Compte Where Compte.CompteSystem_Login = ? and Compte.Login = ?;";
+		
+		try {
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, String.valueOf(sysLoginHash));
+			st.setInt(2, loginHash);
+			
+			ResultSet rs = st.executeQuery();
+			while(rs.next()){
+				if(rs.getInt(1) == domainHash){
+					return true;
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 		
 
 }

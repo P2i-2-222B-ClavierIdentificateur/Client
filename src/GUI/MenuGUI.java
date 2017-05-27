@@ -150,6 +150,7 @@ public class MenuGUI extends JFrame {
 		layout.putConstraint(SpringLayout.SOUTH, getPsswdPane, 0, SpringLayout.SOUTH, mainPane);
 		layout.putConstraint(SpringLayout.NORTH, getPsswdPane, 0, SpringLayout.NORTH, mainPane);
 		getPsswdPane.setVisible(true);
+		getPsswdPane.getDomainField().grabFocus();
 	}
 	
 	public void showMenuPane(){
