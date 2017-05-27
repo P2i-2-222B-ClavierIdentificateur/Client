@@ -4,14 +4,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import KeystrokeMeasuring.KeyStroke;
+import Main.Account;
 
 public class CosineTest {
 	
 	private static final double cosineSimilarityThreshold = 0.5; 
 
-	public static boolean test(KeyStrokeSet testSet, String login, String domain,  String password ){
+	public static boolean test(KeyStrokeSet testSet, Account account ){
 		
-		LinkedList<KeyStrokeSet> sets = KeyStrokeSet.buildReferenceSet(login, domain, password);
+		LinkedList<KeyStrokeSet> sets = KeyStrokeSet.buildReferenceSet(account);
 		LinkedList<LinkedList<Double>> similarityMatrix = new LinkedList<LinkedList<Double>>();
 		Iterator<KeyStrokeSet> setsIterator = sets.iterator();
 		LinkedList<Double> averageSimilarity = new LinkedList<Double>();

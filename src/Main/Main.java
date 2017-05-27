@@ -1,9 +1,7 @@
 package Main;
 
 
-import java.io.FileWriter;
 
-import java.io.PrintWriter;
 import java.sql.Connection;
 
 import Database.ConnectionBD;
@@ -13,13 +11,6 @@ import Sync.SyncUtil;
 
 
 public class Main {
-	
-	public static Password p;
-	public static String userId;
-	public static boolean tests = false; //variable qui permet d'attendre que tous les mots de passe soit entrees
-	public static FileWriter resultats;	//permet d'ecrire les resultats dans un fichier resultats.csv
-	public static PrintWriter out;	//Complement du file writter (pas forcement utile d'ailleur)
-	public static double [][] times; //contient les valeurs de temps separant chaque touche pour les differents essais
 	public static SessionManager sessionManager;
 	public static SystemAccount currentSystemAccount;
 	public static Connection conn;

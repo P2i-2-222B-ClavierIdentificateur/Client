@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 import Database.Request;
 import KeystrokeMeasuring.KeyStroke;
-import Main.Password;
+import Main.Account;
 
 	public class KeyStrokeSet {
 		
@@ -25,10 +25,10 @@ import Main.Password;
 			}
 		}
 	
-	protected static LinkedList<KeyStrokeSet> buildReferenceSet(String login, String domain, String password){
+	protected static LinkedList<KeyStrokeSet> buildReferenceSet(Account account){
 		Connection conn = Main.Main.conn;
 		LinkedList <KeyStrokeSet> sets = new LinkedList<KeyStrokeSet>();
-		int[] refIndexes = Request.getLastSuccessfulEntries(login, domain,conn);
+		int[] refIndexes = Request.getLastSuccessfulEntries(account,conn);
 		System.out.println("indexes : " + refIndexes.length);
 		
 			for (int k =0; k<refIndexes.length;k++){
@@ -38,7 +38,7 @@ import Main.Password;
 				for(int j=0;j<keysForEntry.size();j++){
 					ArrayList<String>encryptedValues = new ArrayList<String>(15);
 					
-					keys.add(new KeyStroke(new ArrayList(keysForEntry.get(j)),new Password(password.toCharArray(),login)));
+					keys.add(new KeyStroke(new ArrayList(keysForEntry.get(j)),account));
 				}
 				if(keys.size()>0)
 				sets.add(new KeyStrokeSet (keys));

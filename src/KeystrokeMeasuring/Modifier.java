@@ -3,7 +3,6 @@ package KeystrokeMeasuring;
 import java.util.ArrayList;
 
 import Encryption.Encryption;
-import Main.Password;
 
 public class Modifier extends Key {
 	private int location;
@@ -20,10 +19,10 @@ public class Modifier extends Key {
 	}
 	
 	@Override
-	public ArrayList<String> getEncryptedValues(Password p){
+	public ArrayList<String> getEncryptedValues(String p){
 		ArrayList<String> encryptedValues = super.getEncryptedValues(p);
 		if(location!=0)
-			encryptedValues.add(Encryption.encryptInt(location,new String(p.getPassword())));
+			encryptedValues.add(Encryption.encryptInt(location,p));
 		return encryptedValues;
 	}
 	

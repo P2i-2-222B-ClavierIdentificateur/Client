@@ -6,7 +6,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
-import Main.Password;
+
+import Main.Account;
 
 @SuppressWarnings("serial")
 public class MenuGUI extends JFrame {
@@ -111,8 +112,8 @@ public class MenuGUI extends JFrame {
 		systemConnectionPane.setVisible(false);
 	}
 	
-	public void initBdGui(Password p,String domaine,int passwordLength){
-		bdGui = new BDGUI(p,domaine,passwordLength,this);
+	public void initBdGui(Account account,int passwordLength){
+		bdGui = new BDGUI(account,passwordLength,this);
 		mainPane.add(bdGui);
 		layout.putConstraint(SpringLayout.WEST, bdGui, 0, SpringLayout.WEST, mainPane);
 		layout.putConstraint(SpringLayout.EAST, bdGui, 0, SpringLayout.EAST, mainPane);

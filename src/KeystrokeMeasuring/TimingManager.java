@@ -11,16 +11,15 @@ import Arduino.PressionManager;
 import Database.Request;
 import Encryption.Encryption;
 import GUI.GetPasswordGUI;
+import Main.Account;
 import Main.Main;
-import Main.Password;
 import Main.PasswordTry;
 
 public class TimingManager implements KeyListener {
 	//Params de compte
-	private Password p; 
-	private  String userId;
+	private Account account;
 	private final JPasswordField pf;
-	private  String domain;
+	
 	
 	private PressionManager pm;
 	private Thread pressureThread;
@@ -37,13 +36,11 @@ public class TimingManager implements KeyListener {
 	boolean lShift=false, rShift=false, lCtrl=false, rCtrl=false, lAlt=false, rAlt=false, capsLock=false;
 	Toolkit t;
 	
-	public TimingManager(Password p, String domaine, JPasswordField pf){	
-		this.domain = domaine;
-		this.p=p;
-		this.userId=p.getUserID();
+	public TimingManager(Account account, JPasswordField pf){	
+		this.account = account;
 		this.pf=pf;
-		strokes = new ArrayList<KeyStrokeListener>(2*p.getPassword().length);
-		keyStrokes = new ArrayList<KeyStroke>(p.getPassword().length);
+		strokes = new ArrayList<KeyStrokeListener>(2*account.getPasswordAsString().length());
+		keyStrokes = new ArrayList<KeyStroke>(account.getPasswordAsString().length());
 		t=Toolkit.getDefaultToolkit();
 		pm=new PressionManager(this);
 		pressureThread = new Thread(pm);
@@ -136,7 +133,7 @@ public class TimingManager implements KeyListener {
 				pm.setEnd(true);
 				ArrayList<Double> d = pm.getTabTriee();
 				System.out.println(d.size());
-				for(int i=0; i<p.getPassword().length; i++){
+				for(int i=0; i<account.getPasswordAsString().length(); i++){
 					double test =d.get(i);
 					keyStrokes.get(i).setPressure(test);
 				} 
@@ -172,28 +169,6 @@ public class TimingManager implements KeyListener {
 	public void keyTyped(KeyEvent arg0) {}
 	
 
-	public Password getP() {
-		return p;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public String getDomain() {
-		return domain;
-	}
-	public void setP(Password p){
-		this.p=p;
-	}
-	
-	public void setUserId(String userId){
-		this.userId = userId;
-	}
-	
-	public void setDomain(String domain){
-		this.domain = domain;
-	}
 
 	public ArrayList<KeyStrokeListener> getStrokes() {
 		return strokes;

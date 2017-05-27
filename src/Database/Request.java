@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.sql.PreparedStatement;
 
-
+import Main.Account;
 import Main.Main;
 
 public class Request {
@@ -32,16 +32,17 @@ public class Request {
         return rs;
 	}
 	
-	public static int[] getLastSuccessfulEntries (String login, String domain,Connection conn){
+	public static int[] getLastSuccessfulEntries (Account account,Connection conn){
 		
-		int loginHash = login.hashCode();
-		int domainHash = domain.hashCode();
+		int loginHash = account.getLoginHash();
+		int domainHash = account.getDomainHash();
+		String sysLoginHash = String.valueOf(account.getSysAccount().getSysLoginHash());
 		
 		//TODO corriger la requête, elle ne gère pas le succès
 		String request = "SELECT Entree.Index from Entree "
 						+"	Where Entree.Session_index in (Select Session.index From Session "
 						+"	Where Session.sucess = 1 and Session.Compte_Index in (Select Compte.Index From Compte"
-						+"	Where Compte.Login = ? and Compte.domainHash = ?))"
+						+"	Where Compte.Login = ? and Compte.domainHash = ? and Compte.CompteSystem_Login = ?))"
 						+"	Order by Entree.Index DESC Limit 50;";
 		
 
@@ -53,6 +54,7 @@ public class Request {
 			PreparedStatement entriesStatement = conn.prepareStatement(request);
 			entriesStatement.setInt(1, loginHash);
 			entriesStatement.setInt(2, domainHash);
+			entriesStatement.setString(3, sysLoginHash);
 			res = entriesStatement.executeQuery();
 			int i =0;
 			while (res.next() && i<50){
@@ -124,10 +126,10 @@ public class Request {
 		return password;
 	}
 	
-	public static String getEncryptedPassword (String login, String domain,Connection conn){
+	public static String getEncryptedPassword (Account account,Connection conn){
 		
-		int loginHash = login.hashCode();
-		int domainHash = domain.hashCode();
+		int loginHash = account.getLoginHash();
+		int domainHash = account.getDomainHash();
 		
 		
 		String request = "SELECT masterPassword FROM Compte WHERE Login = ? AND domainHash = ?;";
@@ -155,10 +157,10 @@ public class Request {
 		}
 	}
 	
-	public static boolean checkIfAccountExists(String sysLogin, String login, String domain,Connection conn){
-		int sysLoginHash = sysLogin.hashCode();
-		int loginHash = login.hashCode();
-		int domainHash = domain.hashCode();
+	public static boolean checkIfAccountExists(Account account,Connection conn){
+		int sysLoginHash = account.getSysAccount().getSysLoginHash();
+		int loginHash = account.getLoginHash();
+		int domainHash = account.getDomainHash();
 		
 		String query = "Select Compte.domainHash From Compte Where Compte.CompteSystem_Login = ? and Compte.Login = ?;";
 		

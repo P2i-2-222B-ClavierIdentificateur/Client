@@ -7,16 +7,16 @@ public class PasswordGetter {
 	
 	
 	@SuppressWarnings("unused")
-	public static String getPassword (String password, String login, String domain){
-		ResultSet rs = Database.Request.getLogin(domain.hashCode(),Main.conn);
+	public static String getPassword (Account account){
+		ResultSet rs = Database.Request.getLogin(account.getDomainHash(),Main.conn);
 		int passwordLength=0;
 		boolean correctAccount = false;
 		try {
 			while (rs.next()){
-				if(Encryption.Encryption.checkPassword(rs.getString("masterPassword"), password)){
-					if(login.hashCode() == Integer.parseInt(rs.getString("Login"))){
+				if(Encryption.Encryption.checkPassword(rs.getString("masterPassword"), account.getPasswordAsString())){
+					if(account.getLoginHash() == Integer.parseInt(rs.getString("Login"))){
 						correctAccount = true;
-						passwordLength =(int)(Encryption.Encryption.decryptValue(rs.getString("passwordLength"), password));
+						passwordLength =(int)(Encryption.Encryption.decryptValue(rs.getString("passwordLength"), account.getPasswordAsString()));
 					}
 				}
 			}
@@ -24,21 +24,21 @@ public class PasswordGetter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return generatePassword(login,password,domain,passwordLength);
+		return generatePassword(account,passwordLength);
 	}
 	
-	public static   String generatePassword(String login, String masterPassword, String domaine,int passwordLength){
-		Byte[] loginByte = new Byte[login.getBytes().length];
-		Byte[] mpByte = new Byte [masterPassword.getBytes().length];
-		Byte[] domainByte = new Byte [domaine.getBytes().length];
+	public static   String generatePassword(Account account,int passwordLength){
+		Byte[] loginByte = new Byte[account.getLogin().getBytes().length];
+		Byte[] mpByte = new Byte [account.getPasswordAsString().getBytes().length];
+		Byte[] domainByte = new Byte [account.getDomain().getBytes().length];
 		for (int i =0; i<loginByte.length;i++){
-			loginByte[i] = new Byte(login.getBytes()[i]);
+			loginByte[i] = new Byte(account.getLogin().getBytes()[i]);
 		}
 		for (int i =0; i<mpByte.length;i++){
-			mpByte[i] = new Byte(masterPassword.getBytes()[i]);
+			mpByte[i] = new Byte(account.getPasswordAsString().getBytes()[i]);
 		}
 		for (int i =0; i<domainByte.length;i++){
-			domainByte[i] = new Byte(domaine.getBytes()[i]);
+			domainByte[i] = new Byte(account.getDomain().getBytes()[i]);
 		}
 		int[] passwordInt = new int[passwordLength];
 		int j = 0;

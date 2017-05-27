@@ -1,8 +1,8 @@
 package GUI;
 
 import GUIElements.CancelButton;
+import Main.Account;
 import Main.Main;
-import Main.Password;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -275,18 +275,15 @@ public class AddAccountGUI extends JPanel {
 					while(domain.charAt(i)==' ');
 					domain = domain.substring(0, i+1);
 				}
-				if(Request.checkIfAccountExists(Main.currentSystemAccount.getLogin(), login, domain, Main.conn)){
+				Account account = new Account(login,domain,txt1.getPassword());
+				if(Request.checkIfAccountExists( account, Main.conn)){
 					throw new AccountAlreadyExistsException();
 				}else{
 
 					if(login.length()>2 && domain.length()>2){
 						initPsswd.setVisible(false);
-						Main.p = new Password (txt2.getPassword(),userIdField.getText());
-						Main.userId = userIdField.getText();
-						f.initBdGui(Main.p,domainField.getText(),passwordLengthSlider.getValue());
-						Main.sessionManager.getCurrentSession().setUserId(login);
-						Main.sessionManager.getCurrentSession().setDomain(domain);
-						Main.sessionManager.getCurrentSession().setPassword(new String (txt1.getPassword()));
+						f.initBdGui(account,passwordLengthSlider.getValue());
+
 						setVisible(false);
 					}else{
 						new SimpleWarning("L'un des champs est trop court");

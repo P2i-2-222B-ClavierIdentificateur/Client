@@ -11,9 +11,9 @@ import javax.swing.SpringLayout;
 
 import Database.Insert;
 import KeystrokeMeasuring.TimingManager;
+import Main.Account;
 import Main.Entry;
 import Main.Main;
-import Main.Password;
 import Main.PasswordGetter;
 import Main.PasswordTry;
 
@@ -23,10 +23,7 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 	
 	JPanel mainPanel; // le panel principal
 	JPasswordField psswd; // le champ de mot de passe
-	final Password p; // le mot de passe
-	String userID;
-	Entry[] entries;
-	String domaine;
+	Account account;
 	int passwordLength;
 	public JPanel progressBar;
 	
@@ -35,14 +32,12 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 	int validTries = 0;
 	
 	
-	public BDGUI(final Password p,String domaine,int passwordLength, MenuGUI f){
+	public BDGUI(Account account,int passwordLength, MenuGUI f){
 		//On initialise tout
+		this.account = account;
 		this.f=f;
-		this.p = p;
-		this.domaine = domaine;
+
 		this.passwordLength = passwordLength;
-		System.out.println(userID);
-		entries = new Entry[15];	
 		JLabel label1 = new JLabel ("Saisir le mot de passe 15 fois sans erreur");
 		psswd = new JPasswordField ("",15);
 
@@ -70,7 +65,7 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 		progressBar.repaint();
 		
 		label1.setForeground(Color.white);
-		TimingManager timingManager = new TimingManager(p,domaine,psswd);
+		TimingManager timingManager = new TimingManager(account,psswd);
 		
 		psswd.addKeyListener(timingManager);
 		psswd.addKeyListener(new KeyListener(){
@@ -80,7 +75,7 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
 					Main.sessionManager.getCurrentSession().reshceduleEnd();
 
-					if (Main.passwordMatch(psswd.getPassword(), p.getPassword())){
+					if (Main.passwordMatch(psswd.getPassword(), account.getPasswordAsArray())){
 						validTries++;
 						
 						if(validTries>=15){
@@ -152,8 +147,9 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 		for(int i=0; i<Main.sessionManager.getCurrentSession().getPasswordTries().size();i++){
 			Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
 		}
-		Insert.addCompte(p, domaine,passwordLength,Main.conn);
-		String generatedPassword = PasswordGetter.generatePassword(p.getUserID(),p.toString(),domaine,passwordLength);
+		Insert.addCompte(account,passwordLength,Main.conn);
+		String generatedPassword = PasswordGetter.generatePassword(account,passwordLength);
+		Main.sessionManager.getCurrentSession().setAccount(account);
 		Main.sessionManager.getCurrentSession().setSuccess(true);
 		Main.sessionManager.endCurrentSession();
 		f.showPasswordPane(generatedPassword);

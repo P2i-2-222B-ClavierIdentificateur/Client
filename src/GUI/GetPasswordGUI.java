@@ -26,7 +26,7 @@ import KeystrokeMeasuring.TimingManager;
 import Main.PasswordGetter;
 import Main.PasswordTry;
 import Warnings.SimpleWarning;
-import Main.Password;
+import Main.Account;
 import Main.Main;
 
 @SuppressWarnings("serial")
@@ -185,9 +185,8 @@ public class GetPasswordGUI extends JPanel{
 			domain = domain.substring(0, i+1);
 		} 
 		if(login.length()>2 && domain.length()>2){
-			Main.sessionManager.getCurrentSession().setPassword(new String (psswdField.getPassword()));
-			Main.sessionManager.getCurrentSession().setUserId(idField.getText());
-			Main.sessionManager.getCurrentSession().setDomain(domainField.getText());
+			Account account = new Account(login,domain,psswdField.getPassword());
+			Main.sessionManager.getCurrentSession().setAccount(new Account(idField.getText(),domainField.getText(),psswdField.getPassword()));
 			Main.sessionManager.getCurrentSession().addPasswordTry(new PasswordTry(timingManager.getKeyStrokes()));
 			System.out.println("PasswordTry ajouté");
 			//timingManager.getStrokes().clear();
@@ -197,9 +196,9 @@ public class GetPasswordGUI extends JPanel{
 			
 			int i = Main.sessionManager.getCurrentSession().getPasswordTries().size()-1;
 			try {
-				if(DistanceTest.test(new KeyStrokeSet(ksl), idField.getText(),domainField.getText(), new String ( psswdField.getPassword()))){
+				if(DistanceTest.test(new KeyStrokeSet(ksl), account)){
 					Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
-					f.showPasswordPane(PasswordGetter.getPassword(new String(psswdField.getPassword()), login, domain));
+					f.showPasswordPane(PasswordGetter.getPassword(account));
 					Main.sessionManager.endCurrentSession();
 
 				}else{

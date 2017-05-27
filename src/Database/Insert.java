@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import Main.Account;
 import Main.Main;
 import javax.swing.JOptionPane;
-import Main.Password;
 import Session.Session;
 import Encryption.Encryption;
 
@@ -20,13 +20,13 @@ import Encryption.Encryption;
 public class Insert {
 
 	
-	public static void addCompte(Password p,String domain,int passwordLength,Connection conn){
+	public static void addCompte(Account account,int passwordLength,Connection conn){
 		
 		System.out.println("Ajout d'un compte");
-		String ePassword = Encryption.encryptPassword(p.toString());
-		int  eLogin = p.getUserID().hashCode();
-		int hDomain = domain.hashCode();
-		String ePasswordLength = Encryption.encryptInt(passwordLength, p.toString());
+		String ePassword = Encryption.encryptPassword(account.getPasswordAsString());
+		int  eLogin = account.getLoginHash();
+		int hDomain = account.getDomainHash();
+		String ePasswordLength = Encryption.encryptInt(passwordLength, account.getPasswordAsString());
 		
 		
         
@@ -43,7 +43,7 @@ public class Insert {
 			compteStatement.setString(2, ePassword);
 			compteStatement.setString(3, String.valueOf(hDomain));
 			compteStatement.setString(4, ePasswordLength);
-			compteStatement.setString(5, String.valueOf(Main.currentSystemAccount.getLogin().hashCode()));
+			compteStatement.setString(5, String.valueOf(account.getSysAccount().getSysLoginHash()));
 			compteStatement.executeUpdate();
 			System.out.println("Compte ajouté");
 			Statement commit = conn.createStatement();
@@ -66,9 +66,9 @@ public class Insert {
 		
 		// on recupere le compte associe a la session
 		
-		int userId = s.getUserId().hashCode();
+		int userId = s.getAccount().getLoginHash();
 		
-		int domain = s.getDomain().hashCode();
+		int domain = s.getAccount().getDomainHash();
 		
 		String account = "SELECT Compte.Index FROM Compte WHERE Login = \""+userId+
 				"\" and domainHash = " + domain+";"; 
@@ -137,8 +137,7 @@ public class Insert {
 
 					for(int j=0; j<s.getPasswordTries().get(i).getKeys().size();j++){
 						//System.out.println("Ajout de la touche " + j + " pour l'entree " + entreeId);
-						ArrayList<String>encryptedValues = s.getPasswordTries().get(i).getKeys().get(j).getEncryptedValues(new Password(
-								s.getPassword().toCharArray(),s.getUserId()));
+						ArrayList<String>encryptedValues = s.getPasswordTries().get(i).getKeys().get(j).getEncryptedValues(s.getAccount().getPasswordAsString());
 						toucheStatement.setInt(j*16+1,entreeId);
 						
 						//TODO moddifier avec un iterator 
@@ -149,7 +148,7 @@ public class Insert {
 						}
 						
 						while(k+2<17){
-							toucheStatement.setString(j*16+k+2, Encryption.encryptText("NULL", s.getPassword()));
+							toucheStatement.setString(j*16+k+2, Encryption.encryptText("NULL", s.getAccount().getPasswordAsString()));
 							k++;
 						}
 
