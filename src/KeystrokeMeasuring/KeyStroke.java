@@ -23,8 +23,6 @@ public class KeyStroke extends Key {
 	
 	public KeyStroke(ArrayList<String> encryptedValues, Password p){
 		super(Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())), Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())));
-		//System.out.println(" déchiffé " +Encryption.decryptLong(encryptedValues.get(0), new String(p.getPassword())));
-
 		setPressure(Encryption.decryptValue(encryptedValues.get(2), new String(p.getPassword())));
 		setModifierSequence(Encryption.decryptInt(encryptedValues.get(3), new String(p.getPassword())));
 		long tempDown=Encryption.decryptLong(encryptedValues.get(5), new String(p.getPassword()));
@@ -110,7 +108,7 @@ public class KeyStroke extends Key {
 		}
 			return values;
 
-}
+	}
 	
 	@Override
 	public ArrayList<String> getEncryptedValues(Password p){
@@ -211,7 +209,7 @@ public class KeyStroke extends Key {
 		}
 		System.out.println(result);
 		return result;
-	}
+}
 	
 	
 	@Override

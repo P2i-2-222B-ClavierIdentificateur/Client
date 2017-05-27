@@ -49,6 +49,7 @@ public class GetPasswordGUI extends JPanel{
 	private MenuGUI f;
 	
 	public GetPasswordGUI(JPanel menuPane, final MenuGUI f){
+		this.f=f;
 		SpringLayout layout = f.getLayout();
 		setLayout(layout);
 		
@@ -192,8 +193,8 @@ public class GetPasswordGUI extends JPanel{
 			int i = Main.sessionManager.getCurrentSession().getPasswordTries().size()-1;
 			if(DistanceTest.test(new KeyStrokeSet(ksl), idField.getText(),domainField.getText(), new String ( psswdField.getPassword()))){
 	
-				f.showPasswordPane(PasswordGetter.getPassword(new String(psswdField.getPassword()), idField.getText(), domainField.getText()));
-			
+				f.showPasswordPane(PasswordGetter.getPassword(new String(psswdField.getPassword()), login, domain));
+
 			}else{
 				new SimpleWarning("Maniere d'ecrire non reconnue");
 			}

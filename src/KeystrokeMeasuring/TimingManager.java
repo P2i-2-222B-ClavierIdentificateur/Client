@@ -129,11 +129,8 @@ public class TimingManager implements KeyListener {
 					keyStrokes.get(keyStrokes.size()-1).setModifierSequence(ModifierSequence.getSequence(modifiersOrder));
 				}
 			} 
-			//	System.out.println(strokes.size());
-			//	System.out.println(keyStrokes.size());
 				Main.sessionManager.getCurrentSession().addPasswordTry(new PasswordTry(keyStrokes));
-				//keyStrokes.clear();
-				//strokes.clear();
+
 			
 			if(pm!=null && arduinoConnected){
 				pm.setEnd(true);
@@ -163,9 +160,7 @@ public class TimingManager implements KeyListener {
 			synchronized(this){
 				this.notifyAll();
 			}
-			//System.out.println("Adding char");
 			strokes.add(new CharacterListener(System.nanoTime(),arg0,t.getLockingKeyState(KeyEvent.VK_CAPS_LOCK)));
-
 			pf.addKeyListener(strokes.get(strokes.size()-1));
 		}
 	}

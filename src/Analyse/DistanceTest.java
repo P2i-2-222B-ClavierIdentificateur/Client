@@ -19,7 +19,7 @@ public class DistanceTest {
 	
 	//TODO fusionner login,domain et password dans une instace ce compte
 	public static boolean test(KeyStrokeSet testSet, String login, String domain, String password){
-		LinkedList <KeyStrokeSet> sets = builReferenceSet(login,domain,password);
+		LinkedList <KeyStrokeSet> sets = KeyStrokeSet.buildReferenceSet(login,domain,password);
 		double[][] euclidianDistances = buildEuclidianDistances(testSet,sets);
 		double[][] manhattanDistances = buildManhattanDistances(testSet,sets);
 		double[] avgEuclidianDistance  = new double [euclidianDistances.length];
@@ -66,28 +66,7 @@ public class DistanceTest {
 		return(avgEuclidianRatio<euclidianRatioThreshold );
 	}
 	
-	private static LinkedList<KeyStrokeSet> builReferenceSet(String login, String domain, String password){
-		Connection conn = Main.Main.conn;
-		LinkedList <KeyStrokeSet> sets = new LinkedList<KeyStrokeSet>();
-		int[] refIndexes = Request.getLastSuccessfulEntries(login, domain,conn);
-		System.out.println("indexes : " + refIndexes.length);
-		
-			for (int k =0; k<refIndexes.length;k++){
-				LinkedList <KeyStroke> keys = new LinkedList <KeyStroke>();
-				ArrayList <ArrayList>keysForEntry = Request.getTouchesForEntry(refIndexes[k],conn);
-				System.out.println("keys :" + keysForEntry.size());
-				for(int j=0;j<keysForEntry.size();j++){
-					ArrayList<String>encryptedValues = new ArrayList<String>(15);
-					
-					keys.add(new KeyStroke(new ArrayList(keysForEntry.get(j)),new Password(password.toCharArray(),login)));
-				}
-				if(keys.size()>0)
-				sets.add(new KeyStrokeSet (keys));
-			}
-			//System.out.println("sets" + sets.size());
-
-		return sets;
-	}
+	
 	
 	//TODO convertir en ArrayList pour gagner du temps à l'exécution?
 	private static double[][] buildEuclidianDistances(KeyStrokeSet testSet,LinkedList <KeyStrokeSet> sets){

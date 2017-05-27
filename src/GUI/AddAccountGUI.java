@@ -282,5 +282,4 @@ public class AddAccountGUI extends JPanel {
 	}
 	
 
-	
 }
