@@ -78,6 +78,8 @@ public class BDGUI extends JPanel{ //fenetre ou se fait la saisie des mots de pa
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					Main.sessionManager.getCurrentSession().reshceduleEnd();
+
 					if (Main.passwordMatch(psswd.getPassword(), p.getPassword())){
 						validTries++;
 						

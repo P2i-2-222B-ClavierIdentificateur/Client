@@ -56,16 +56,16 @@ public class AddAccountGUI extends JPanel {
 		cancel = new CancelButton(menuPane,this);
 		this.add(cancel);
 		//premier champ de mot de passe
-		JLabel label1 =  new JLabel("Enter password: ");
+		JLabel label1 =  new JLabel("Mot de Passe: ");
 		label1.setForeground(Color.white);
 		txt1 = new JPasswordField("", 15);
 		
 		//deuxieme champ de mot de passe 
-		JLabel label2 =  new JLabel("Confirm password: ");
+		JLabel label2 =  new JLabel("Confirmer le mot de passe: ");
 		label2.setForeground(Color.white);
 		txt2 = new JPasswordField("", 15);
 		
-		domainLabel = new JLabel("Domain :");
+		domainLabel = new JLabel("Domaine :");
 		domainLabel.setForeground(Color.white);
 		this.add(domainLabel);
 		
@@ -73,7 +73,7 @@ public class AddAccountGUI extends JPanel {
 		this.add(domainField);
 		
 		//champ d'identifiant :
-		userIdLabel = new JLabel ("Id : ");
+		userIdLabel = new JLabel ("Identifiant : ");
 		userIdLabel.setForeground(Color.white);
 		userIdField = new JTextField("");
 		//on ajoute un key listener pour gerer la validation avec la touche entree
@@ -102,7 +102,7 @@ public class AddAccountGUI extends JPanel {
 		txt2.addKeyListener(userIdField.getKeyListeners()[0]);
 		domainField.addKeyListener(userIdField.getKeyListeners()[0]);
 		// ici meme chose qu'avec la touche entre mais avec un bouton 
-		final JButton button1 = new JButton("Create Account");
+		final JButton button1 = new JButton("Créer");
 		button1.setSize(15,10);
 		button1.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -235,6 +235,8 @@ public class AddAccountGUI extends JPanel {
 	}
 	
 	private void tryCreateAccount(){
+		Main.sessionManager.getCurrentSession().reshceduleEnd();
+
 		// on verifie que les deux mots de passe correspondent
 		psswdMatch = Main.passwordMatch(txt1.getPassword(),txt2.getPassword());
 		if(psswdMatch == true){ //si oui on passe a la suite

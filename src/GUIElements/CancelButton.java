@@ -13,7 +13,7 @@ public class CancelButton extends JButton implements ActionListener{
 	private JPanel currentPane;
 	
 	public CancelButton(JPanel prev , JPanel current){
-		super("Cancel");
+		super("Annuler");
 		prevPane = prev;
 		currentPane = current;
 		this.addActionListener(this);

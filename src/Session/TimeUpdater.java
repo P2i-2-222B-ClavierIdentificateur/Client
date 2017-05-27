@@ -1,6 +1,6 @@
 package Session;
 
-public class TimeUpdater implements Runnable {
+public class TimeUpdater extends Thread {
 	
 	private Session s;
 	
@@ -14,7 +14,7 @@ public class TimeUpdater implements Runnable {
 			s.getCurrentTime().setTime(System.currentTimeMillis());
 			s.checkEnd();
 			try {
-				Thread.sleep(5000);
+				sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

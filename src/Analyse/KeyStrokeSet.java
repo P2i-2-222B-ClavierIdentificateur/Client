@@ -34,7 +34,7 @@ import Main.Password;
 			for (int k =0; k<refIndexes.length;k++){
 				LinkedList <KeyStroke> keys = new LinkedList <KeyStroke>();
 				ArrayList <ArrayList>keysForEntry = Request.getTouchesForEntry(refIndexes[k],conn);
-				System.out.println("keys :" + keysForEntry.size());
+				//System.out.println("keys :" + keysForEntry.size());
 				for(int j=0;j<keysForEntry.size();j++){
 					ArrayList<String>encryptedValues = new ArrayList<String>(15);
 					

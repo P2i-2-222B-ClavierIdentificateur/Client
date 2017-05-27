@@ -28,7 +28,7 @@ public class Session {
 		this.manager = manager;
 		debutTime = new Date(System.currentTimeMillis());
 		currentTime = new Date(System.currentTimeMillis());
-		shceduledEnd = new Date (debutTime.getTime()+(long)(10*60*1000)); // fin de la session prévue 10 min après le début
+		shceduledEnd = new Date (debutTime.getTime()+(long)(60*1000)); // fin de la session prévue 10 min après le début
 		running = true;
 		timeUpdater = new TimeUpdater(this);
 		passwordTries = new ArrayList<PasswordTry>();
@@ -50,8 +50,8 @@ public class Session {
 	// vérifie si il faut terminer la session
 	public void checkEnd(){
 		if(currentTime.compareTo(shceduledEnd)>=0){
-			manager.newSession();
 			System.out.println("ending session");
+			manager.newSession();
 		}
 	}
 	
@@ -62,6 +62,11 @@ public class Session {
 			manager.newSession();
 		}
 		System.out.println("Essai ajouté");
+	}
+	
+	public void reshceduleEnd(){
+		shceduledEnd = new Date(shceduledEnd.getTime() + (long)(20*1000));
+		System.out.println("End of session reshceduled");
 	}
 
 	public Date getDebutTime() {

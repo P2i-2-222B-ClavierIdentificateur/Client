@@ -15,16 +15,20 @@ public class SessionManager {
 	
 	public SessionManager(){
 		prevSessions = new ArrayList<Session>();
-		currentSession = new Session(this);
+		newSession();
 	}
 	
 	// termine une session et l'ajoute à la liste des sessions terminées
 	public void endCurrentSession(){
 		currentSession.setRunning(false);
 		//le succès de la session est défini à partir du succès de la dernière tentative
-		currentSession.setSuccess(currentSession.getPasswordTries().get(currentSession.getPasswordTries().size()-1).isSuccess());
-		Insert.addSession(currentSession,Main.Main.conn);
+		if(currentSession.getPasswordTries().size()>0){
+			currentSession.setSuccess(currentSession.getPasswordTries().get(currentSession.getPasswordTries().size()-1).isSuccess());
+			Insert.addSession(currentSession,Main.Main.conn);
+		}
 		prevSessions.add(new Session(currentSession,this));
+		System.out.println("Ending current session : " + currentSession.isSuccess());
+
 		
 	}
 	
@@ -33,7 +37,9 @@ public class SessionManager {
 		if(currentSession!=null){
 			endCurrentSession();
 		}
+		System.out.println("New Session");
 		currentSession = new Session(this);
+		currentSession.getTimeUpdater().start();
 	}
 	
 	public Session getCurrentSession() {

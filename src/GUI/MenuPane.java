@@ -18,8 +18,8 @@ public class MenuPane extends JPanel{
 		setBackground(Color.DARK_GRAY);
 		SpringLayout layout = f.layout;
 		setLayout(layout);
-		create = new JButton ("Create a new account");
-		request = new JButton ("get an existing password");
+		create = new JButton ("Ajouter un compte");
+		request = new JButton ("Récupérer un mot de passe");
 		setVisible(false);
 		
 		this.add(create);

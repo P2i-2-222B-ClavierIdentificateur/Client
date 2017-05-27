@@ -58,15 +58,15 @@ public class GetPasswordGUI extends JPanel{
 		cancel = new CancelButton(menuPane,this);
 		this.add(cancel);
 		
-		domainLabel = new JLabel ("Domain : ");
+		domainLabel = new JLabel ("Domaine : ");
 		domainLabel.setForeground(Color.white);
 		this.add(domainLabel);
 		
-		idLabel = new JLabel("ID : ");
+		idLabel = new JLabel("Identifiant : ");
 		idLabel.setForeground(Color.white);
 		this.add(idLabel);
 		
-		psswdLabel = new JLabel("Password : ");
+		psswdLabel = new JLabel("Mot de passe : ");
 		psswdLabel.setForeground(Color.white);
 		this.add(psswdLabel);
 		
@@ -76,7 +76,7 @@ public class GetPasswordGUI extends JPanel{
 		idField = new JTextField();
 		this.add(idField);
 		
-		getPsswd = new JButton("Get Password");
+		getPsswd = new JButton("Récupérer le mot de passe");
 
 		
 		psswdField = new JPasswordField();
@@ -113,7 +113,6 @@ public class GetPasswordGUI extends JPanel{
 		});
 		
 
-		getPsswd = new JButton("Get Password");
 		getPsswd.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -159,6 +158,8 @@ public class GetPasswordGUI extends JPanel{
 	}
 	
 	private void tryConnection(){
+		Main.sessionManager.getCurrentSession().reshceduleEnd();
+
 		ArrayList<KeyStroke> ks = new ArrayList(timingManager.getKeyStrokes());
 		LinkedList<KeyStroke> ksl = new LinkedList(ks);
 		System.out.println("ksl :" + ksl.size());
@@ -183,6 +184,7 @@ public class GetPasswordGUI extends JPanel{
 		if(login.length()>2 && domain.length()>2){
 			Main.sessionManager.getCurrentSession().setPassword(new String (psswdField.getPassword()));
 			Main.sessionManager.getCurrentSession().setUserId(idField.getText());
+			Main.sessionManager.getCurrentSession().setDomain(domainField.getText());
 			Main.sessionManager.getCurrentSession().addPasswordTry(new PasswordTry(timingManager.getKeyStrokes()));
 			System.out.println("PasswordTry ajouté");
 			//timingManager.getStrokes().clear();
@@ -192,11 +194,14 @@ public class GetPasswordGUI extends JPanel{
 			
 			int i = Main.sessionManager.getCurrentSession().getPasswordTries().size()-1;
 			if(DistanceTest.test(new KeyStrokeSet(ksl), idField.getText(),domainField.getText(), new String ( psswdField.getPassword()))){
-	
+				Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
 				f.showPasswordPane(PasswordGetter.getPassword(new String(psswdField.getPassword()), login, domain));
+				Main.sessionManager.endCurrentSession();
 
 			}else{
 				new SimpleWarning("Maniere d'ecrire non reconnue");
+				Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(false);
+
 			}
 		}else{
 			new SimpleWarning("L'un des champs est trop court");
