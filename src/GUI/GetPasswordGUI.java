@@ -15,8 +15,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import Analyse.GaussTest;
+import Analyse.CosineTest;
+import Analyse.DistanceTest;
 import Analyse.KeyStrokeSet;
+import Analyse.NormalizedGaussTest;
+import Analyse.SimpleGaussTest;
 import Exception.BadLoginException;
 import GUIElements.CancelButton;
 import KeystrokeMeasuring.KeyStroke;
@@ -191,7 +194,8 @@ public class GetPasswordGUI extends JPanel{
 			int i = Main.sessionManager.getCurrentSession().getPasswordTries().size()-1;
 			try {
 				//if(DistanceTest.test(new KeyStrokeSet(ksl), account)){
-				if(GaussTest.test(new KeyStrokeSet(ksl),account)){
+				//if(SimpleGaussTest.test(new KeyStrokeSet(ksl),account)){
+				if(NormalizedGaussTest.test(new KeyStrokeSet(ksl),account)){
 				//if(CosineTest.test(new KeyStrokeSet(ksl), account)){
 					Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
 					f.showPasswordPane(PasswordGetter.getPassword(account));
