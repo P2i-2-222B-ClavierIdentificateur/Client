@@ -8,7 +8,7 @@ import KeystrokeMeasuring.KeyStroke;
 import Main.Account;
 
 public class NormalizedGaussTest {
-	
+
 	public static boolean test(KeyStrokeSet testSet, Account account) throws BadLoginException {
 
 		LinkedList<KeyStrokeSet> sets = KeyStrokeSet.buildReferenceSet(account);
@@ -20,22 +20,31 @@ public class NormalizedGaussTest {
 		int keyIndex = 0;
 
 		double normValue = 0.0;
-		
-		double normValueThreshold = avgMatrix.length * GaussTest.getNbparams();
+
+		int nbParamsNotNull = 0;
 
 		while (keyIter.hasNext()) {
 			double[] tempValues = keyIter.next().getValues();
 			for (int i = 0; i < tempValues.length; i++) {
-				normValue += Math.abs(tempValues[i] - avgMatrix[keyIndex][i]) / sdMatrix[keyIndex][i];
+				if (sdMatrix[keyIndex][i] != 0) {
+					normValue += Math.abs(tempValues[i] - avgMatrix[keyIndex][i]) / sdMatrix[keyIndex][i];
+					nbParamsNotNull++;
+				} else {
+					if (tempValues[i] != avgMatrix[keyIndex][i])
+						return false;
+				}
 			}
 			keyIndex++;
 		}
-		
+
+		double normValueThreshold = avgMatrix.length * nbParamsNotNull;
+
 		System.out.println("value: " + normValue + "|threshold: " + normValueThreshold);
-		
-		if(normValue <= normValueThreshold)
+
+		if (normValue <= normValueThreshold)
 			return true;
-		else return false;		
+		else
+			return false;
 
 	}
 
