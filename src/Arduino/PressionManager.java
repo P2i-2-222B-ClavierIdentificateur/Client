@@ -174,6 +174,10 @@ public class PressionManager implements Runnable {
 			System.out.println(m);
 
 	}
+	
+	public void close(){
+		setStop(true);
+	}
 
 	public ArrayList<Double> getTabTriee() {
 		return tabTriee;

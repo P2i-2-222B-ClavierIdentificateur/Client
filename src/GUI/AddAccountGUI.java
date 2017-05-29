@@ -301,6 +301,10 @@ public class AddAccountGUI extends JPanel {
 		}
 	
 	}
+	
+	public void close(){
+		bdGUI.close();
+	}
 
 	public JPasswordField getTxt1() {
 		return txt1;

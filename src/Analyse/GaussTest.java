@@ -3,62 +3,17 @@ package Analyse;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
-
-import Exception.BadLoginException;
 import KeystrokeMeasuring.KeyStroke;
-import Main.Account;
 
-public class GaussTest {
+public abstract class GaussTest {
 
-	private static final double gaussianCoef = 3; // si 1 niveau confiance de
-													// 67%, si 2 niveau de
-													// confiance 95%, si 3
-													// niveau de confiance 99%
 	private static final int nbParams = 15;
-
-	public static boolean test(KeyStrokeSet testSet, Account account) throws BadLoginException {
-
-		try {
-
-			boolean isTheSamePerson = true;
-
-			LinkedList<KeyStrokeSet> sets = KeyStrokeSet.buildReferenceSet(account);
-
-			double[][] avgMatrix = getAvgMatrix(sets);
-			double[][] sdMatrix = getStandardDeviationMatrix(sets, avgMatrix);
-
-			Iterator<KeyStroke> keyIter = testSet.getSet().iterator();
-			int keyIndex = 0;
-
-			while (isTheSamePerson && keyIter.hasNext()) {
-
-				double[] values = keyIter.next().getValues();
-				int i = 0;
-
-				while (i < nbParams && isTheSamePerson) {
-
-					double min = avgMatrix[keyIndex][i] - gaussianCoef * sdMatrix[keyIndex][i];
-					double max = avgMatrix[keyIndex][i] + gaussianCoef * sdMatrix[keyIndex][i];
-					if (values[i] < min || values[i] > max)
-						isTheSamePerson = false;
-					i++;
-
-				}
-
-				keyIndex++;
-
-			}
-
-			return isTheSamePerson;
-
-		} catch (EncryptionOperationNotPossibleException e) {
-			throw new BadLoginException();
-		}
-
+	
+	public static int getNbparams() {
+		return nbParams;
 	}
 
-	private static double[][] getAvgMatrix(LinkedList<KeyStrokeSet> sets) {
+	protected static double[][] getAvgMatrix(LinkedList<KeyStrokeSet> sets) {
 
 		// On definit la matrice des moyennes pour chaque parametre de chaque
 		// touche
@@ -77,8 +32,7 @@ public class GaussTest {
 				KeyStroke curr = strokesIter.next();
 				double[] values = curr.getValues();
 				for (int i = 0; i < values.length; i++) {
-					if (i < avgMatrix[keyIndex].length)
-						avgMatrix[keyIndex][i] += (values[i] / ((double) sets.size()));
+					avgMatrix[keyIndex][i] += (values[i] / ((double) sets.size()));
 				}
 				keyIndex++;
 
@@ -92,7 +46,7 @@ public class GaussTest {
 
 	}
 
-	public static double[][] getStandardDeviationMatrix(LinkedList<KeyStrokeSet> sets, double[][] avgMatrix) {
+	protected static double[][] getStandardDeviationMatrix(LinkedList<KeyStrokeSet> sets, double[][] avgMatrix) {
 		double[][] standardDeviationMatrix = new double[sets.getFirst().getSet().size()][nbParams];
 
 		// On reinitialise l'iterateur de sets
