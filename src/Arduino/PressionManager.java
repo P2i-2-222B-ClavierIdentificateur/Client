@@ -33,8 +33,15 @@ public class PressionManager implements Runnable {
 
 		console.log("RECHERCHE d'un port disponible...");
 		port = ArduinoUsbChannel.getOneComPort();
-
-		if (port == null) {
+		
+		if(port != null){
+			try {
+				vcpChannel = new ArduinoUsbChannel(port);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
 			System.out.println("Impossible de se connecter au module de mesure de pressions, poursuite du programme "
 					+ "sans mesure de pressions");
 			tm.setArduinoConnected(false);
