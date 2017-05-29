@@ -17,16 +17,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-<<<<<<< HEAD
-import Analyse.CosineTest;
-import Analyse.DistanceTest;
-=======
 import Analyse.DistanceTest;
 import Analyse.GaussTest;
->>>>>>> refs/remotes/P2i-2-222B-ClavierIdentificateur/Analyse
 import Analyse.KeyStrokeSet;
-import Analyse.NormalizedGaussTest;
-import Analyse.SimpleGaussTest;
 import Exception.BadLoginException;
 import GUIElements.CancelButton;
 import KeystrokeMeasuring.KeyStroke;
@@ -227,12 +220,7 @@ public class GetPasswordGUI extends JPanel{
 			int i = Main.sessionManager.getCurrentSession().getPasswordTries().size()-1;
 			try {
 				//if(DistanceTest.test(new KeyStrokeSet(ksl), account)){
-<<<<<<< HEAD
-				//if(SimpleGaussTest.test(new KeyStrokeSet(ksl),account)){
-				if(NormalizedGaussTest.test(new KeyStrokeSet(ksl),account)){
-=======
 				if(DistanceTest.test(new KeyStrokeSet(ksl),account)){
->>>>>>> refs/remotes/P2i-2-222B-ClavierIdentificateur/Analyse
 				//if(CosineTest.test(new KeyStrokeSet(ksl), account)){
 					Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
 					f.showPasswordPane(PasswordGetter.getPassword(account));

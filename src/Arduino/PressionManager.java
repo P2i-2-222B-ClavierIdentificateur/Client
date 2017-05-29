@@ -30,95 +30,6 @@ public class PressionManager implements Runnable {
 		String port = null;
 
 		// Recherche du port de l'Arduino
-<<<<<<< HEAD
-		do {
-
-			console.log("RECHERCHE d'un port disponible...");
-			port = ArduinoUsbChannel.getOneComPort();
-
-			if (port == null) {
-				console.log("Aucun port disponible!");
-				console.log("Nouvel essai dans 5s");
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException ex) {
-					// Ignorer l'Exception
-				}
-			}
-
-		} while (port == null);
-		port = "COM4";
-
-		console.println("Connection au Port " + port);
-		try {
-
-			vcpChannel = new ArduinoUsbChannel(port);
-			/*
-			 * if(!(vcpChannel.serialPort.isOpened())){ System.out.
-			 * println("Impossible de se connecter au module de mesure de pressions, poursuite du programme "
-			 * + "sans mesure de pressions"); tm.setArduinoConnected(false);
-			 * this.setEnd(false); }
-			 */
-
-		} catch (IOException ex) {
-			ex.printStackTrace(System.err);
-		}
-
-	}
-
-	@Override
-	public void run() {
-
-		try {
-			vcpChannel.open();
-		} catch (SerialPortException | IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		ArrayList<Mesure> tabMesures = new ArrayList<Mesure>(); // mesures
-																// brutes de
-																// pression
-
-		BufferedReader vcpInput = new BufferedReader(new InputStreamReader(vcpChannel.getReader()));
-
-		while (!stop && tm.isArduinoConnected()) {
-
-			try {
-
-				// Attend le debut de la lecture des donnees par le clavier
-				synchronized (tm) {
-					try {
-						tm.wait();
-						setEnd(false);
-					} catch (InterruptedException ie) {
-					}
-				}
-
-				if (true) {
-
-					String line;
-
-					while (!end) {
-						try {
-							if ((line = vcpInput.readLine()) != null) {
-								insertionTab(line, tabMesures);
-								console.println("Data from Arduino: " + line);
-							}
-						} catch (java.io.InterruptedIOException e) {
-						}
-
-					}
-
-					System.out.println("Sortie boucle");
-
-					triTab(tabMesures);
-				}
-
-			} catch (IOException e) {
-			}
-
-=======
 
 		console.log("RECHERCHE d'un port disponible...");
 		port = ArduinoUsbChannel.getOneComPort();
@@ -196,7 +107,6 @@ public class PressionManager implements Runnable {
 				e.printStackTrace(System.err);
 			}
 
->>>>>>> refs/remotes/P2i-2-222B-ClavierIdentificateur/Analyse
 		}
 
 		try {

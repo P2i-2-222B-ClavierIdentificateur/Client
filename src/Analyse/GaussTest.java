@@ -3,19 +3,12 @@ package Analyse;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
+
+import Exception.BadLoginException;
 import KeystrokeMeasuring.KeyStroke;
+import Main.Account;
 
-<<<<<<< HEAD
-public abstract class GaussTest {
-
-	private static final int nbParams = 15;
-	
-	public static int getNbparams() {
-		return nbParams;
-	}
-
-	protected static double[][] getAvgMatrix(LinkedList<KeyStrokeSet> sets) {
-=======
 public class GaussTest {
 
 	private static final double gaussianCoef = 3; // si 1 niveau confiance de
@@ -66,7 +59,6 @@ public class GaussTest {
 	}
 
 	private static double[][] getAvgMatrix(LinkedList<KeyStrokeSet> sets) {
->>>>>>> refs/remotes/P2i-2-222B-ClavierIdentificateur/Analyse
 
 		// On definit la matrice des moyennes pour chaque parametre de chaque
 		// touche
@@ -85,12 +77,8 @@ public class GaussTest {
 				KeyStroke curr = strokesIter.next();
 				double[] values = curr.getValues();
 				for (int i = 0; i < values.length; i++) {
-<<<<<<< HEAD
-					avgMatrix[keyIndex][i] += (values[i] / ((double) sets.size()));
-=======
 					if (i < avgMatrix[keyIndex].length)
 						avgMatrix[keyIndex][i] += (values[i] / ((double) sets.size()));
->>>>>>> refs/remotes/P2i-2-222B-ClavierIdentificateur/Analyse
 				}
 				keyIndex++;
 
@@ -104,11 +92,7 @@ public class GaussTest {
 
 	}
 
-<<<<<<< HEAD
-	protected static double[][] getStandardDeviationMatrix(LinkedList<KeyStrokeSet> sets, double[][] avgMatrix) {
-=======
 	public static double[][] getStandardDeviationMatrix(LinkedList<KeyStrokeSet> sets, double[][] avgMatrix) {
->>>>>>> refs/remotes/P2i-2-222B-ClavierIdentificateur/Analyse
 		double[][] standardDeviationMatrix = new double[sets.getFirst().getSet().size()][nbParams];
 
 		// On reinitialise l'iterateur de sets
