@@ -19,7 +19,7 @@ import Warnings.SimpleWarning;
 public class DistanceTest {
 	
 	//TODO régler les valeurs des seuils
-	private static final double euclidianRatioThreshold = 0.37;
+	private static final double euclidianRatioThreshold = 1;
 	private static final double manhattanRatioThreshold = 0.1;
 	
 	//TODO fusionner login,domain et password dans une instace ce compte

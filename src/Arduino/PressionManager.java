@@ -30,6 +30,7 @@ public class PressionManager implements Runnable {
 		String port = null;
 
 		// Recherche du port de l'Arduino
+<<<<<<< HEAD
 		do {
 
 			console.log("RECHERCHE d'un port disponible...");
@@ -117,6 +118,85 @@ public class PressionManager implements Runnable {
 			} catch (IOException e) {
 			}
 
+=======
+
+		console.log("RECHERCHE d'un port disponible...");
+		port = ArduinoUsbChannel.getOneComPort();
+
+		if (port == null) {
+			System.out.println("Impossible de se connecter au module de mesure de pressions, poursuite du programme "
+					+ "sans mesure de pressions");
+			tm.setArduinoConnected(false);
+			this.setEnd(true);
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException ex) {
+				// Ignorer l'Exception
+			}
+		}
+	}
+
+	@Override
+	public void run() {
+		BufferedReader vcpInput = null;
+		ArrayList<Mesure> tabMesures = null;
+		if (!(end)) {
+			try {
+				vcpChannel.open();
+			} catch (SerialPortException | IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			tabMesures = new ArrayList<Mesure>(); // mesures
+																	// brutes de
+																	// pression
+
+			vcpInput = new BufferedReader(new InputStreamReader(vcpChannel.getReader()));
+		}
+		while (!stop && tm.isArduinoConnected()) {
+
+			try {
+
+				// Attend le debut de la lecture des donnees par le clavier
+				synchronized (tm) {
+					try {
+						System.out.println("Waiting!");
+						tm.wait();
+						setEnd(false);
+						System.out.print("Done waiting!");
+					} catch (InterruptedException ie) {
+					}
+				}
+
+				if (true) {
+
+					String line;
+					try {
+						while (!Thread.interrupted() && end == false) {
+
+							if ((line = vcpInput.readLine()) != null) {
+								insertionTab(line, tabMesures);
+								console.println("Data from Arduino: " + line);
+							}
+
+						}
+					} catch (java.io.InterruptedIOException e) {
+						System.out.println("meow");
+					}
+
+					System.out.println("Sortie boucle");
+
+					triTab(tabMesures);
+					// afficherTabTriee();
+
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace(System.err);
+			}
+
+>>>>>>> refs/remotes/P2i-2-222B-ClavierIdentificateur/Analyse
 		}
 
 		try {
@@ -125,6 +205,8 @@ public class PressionManager implements Runnable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}catch(NullPointerException e){
+			
 		}
 
 	}

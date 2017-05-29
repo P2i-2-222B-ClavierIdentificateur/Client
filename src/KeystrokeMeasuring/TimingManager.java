@@ -65,11 +65,11 @@ public class TimingManager implements KeyListener {
 			pressureThread.interrupt();
 			int j;
 			int modifiersCount;
-			int modifiersAdded=0;
 			int tempLocation=0;
 			int[] modifiersOrder = new int[4];
 			for(int i=0; i<strokes.size(); i++){
 				if(strokes.get(i) instanceof CharacterListener){
+					int modifiersAdded=0;
 					boolean shiftNotAdded=true, ctrlNotAdded=true, altNotAdded=true, altGraphNotAdded=true, capsNotAdded=true;
 					modifiersCount = ((CharacterListener)strokes.get(i)).getModifiersCounter();
 					Arrays.fill(modifiersOrder, 0);
@@ -101,6 +101,7 @@ public class TimingManager implements KeyListener {
 								keyStrokes.get(keyStrokes.size()-1).setShift(new Modifier(strokes.get(j).getUpTime(),strokes.get(j).getDownTime(),tempLocation));
 								modifiersOrder[modifiersCount-modifiersAdded]=1;
 								shiftNotAdded=false;
+								System.out.println("shift added");
 							} else if(keyCode==KeyEvent.VK_CONTROL && cListener.isCtrl() && ctrlNotAdded ){
 								keyStrokes.get(keyStrokes.size()-1).setCtrl(new Modifier(strokes.get(j).getUpTime(),strokes.get(j).getDownTime(),tempLocation));
 								modifiersOrder[modifiersCount-modifiersAdded]=2;
@@ -119,12 +120,18 @@ public class TimingManager implements KeyListener {
 								capsNotAdded=false;
 							}
 							modifiersAdded++;
+							shiftNotAdded = true;
+							ctrlNotAdded = true;
+							altNotAdded=true;
+							capsNotAdded = true;
 						}							
 					}
 					keyStrokes.get(keyStrokes.size()-1).setModifierSequence(ModifierSequence.getSequence(modifiersOrder));
 				}
 			} 
+				if(new String(pf.getPassword()).equals(account.getPasswordAsString()))
 				Main.sessionManager.getCurrentSession().addPasswordTry(new PasswordTry(keyStrokes));
+				pf.setText("");
 
 			
 			if(pm!=null && arduinoConnected){
@@ -191,5 +198,13 @@ public class TimingManager implements KeyListener {
 
 	public void setArduinoConnected(boolean arduinoConnected) {
 		this.arduinoConnected = arduinoConnected;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 }
