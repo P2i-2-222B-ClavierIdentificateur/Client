@@ -15,6 +15,7 @@ import javax.swing.SpringLayout;
 
 import Database.Request;
 import Encryption.Encryption;
+import Exception.BadLoginException;
 import GUIElements.CancelButton;
 import Main.Main;
 import Main.SystemAccount;
@@ -126,7 +127,12 @@ public class SystemConnectionPane extends JPanel{
 		}
 		if(login.length()>2){
 			System.out.println("!"+login+"!");
-			String dbPassword = Request.getPasswordForSystemAccount(login,Main.conn);
+			String dbPassword = null;
+			try {
+				dbPassword = Request.getPasswordForSystemAccount(login,Main.conn);
+			} catch (BadLoginException e) {
+
+			}
 			if(Encryption.checkPassword(dbPassword,new String (passwordField.getPassword()))){
 				Main.currentSystemAccount = new SystemAccount (login);
 				System.out.println("Vous êtes connecté en tant que " + login);

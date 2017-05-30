@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import Exception.BadLoginException;
+
 import java.sql.PreparedStatement;
 
 
@@ -97,7 +100,7 @@ public class Request {
         
 	}
 	
-	public static String getPasswordForSystemAccount(String login,Connection conn){
+	public static String getPasswordForSystemAccount(String login,Connection conn) throws BadLoginException{
 		
 		login = String.valueOf(login.hashCode());
 		System.out.println(login);
@@ -120,12 +123,12 @@ public class Request {
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return "";
+			throw new BadLoginException();
 		}
 		return password;
 	}
 	
-	public static String getEncryptedPassword (Account account,Connection conn){		
+	public static String getEncryptedPassword (Account account,Connection conn) throws BadLoginException{		
 		int loginHash = account.getLoginHash();
 		int domainHash = account.getDomainHash();
 		
@@ -151,7 +154,7 @@ public class Request {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "";
+			throw new BadLoginException();
 		}
 	}
 	
