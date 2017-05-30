@@ -34,6 +34,7 @@ public class PasswordPane extends JPanel {
 		JButton addToClipboard = new JButton ("Ajouter au presse papier");
 		addToClipboard.addActionListener(new ActionListener(){
 
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 				clipboard.setContents(new StringSelection(psswd.getText()), null);
@@ -45,6 +46,7 @@ public class PasswordPane extends JPanel {
 		JButton ok = new JButton ("Ok");
 		ok.addActionListener(new ActionListener(){
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);
 				f.showMenuPane();

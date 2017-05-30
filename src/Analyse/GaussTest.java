@@ -5,13 +5,13 @@ import java.util.LinkedList;
 
 import KeystrokeMeasuring.KeyStroke;
 
-public abstract class GaussTest {
+public class GaussTest {
 
+	private static final double gaussianCoef = 3; // si 1 niveau confiance de
+													// 67%, si 2 niveau de
+													// confiance 95%, si 3
+													// niveau de confiance 99%
 	private static final int nbParams = 15;
-	
-	public static int getNbparams() {
-		return nbParams;
-	}
 
 	protected static double[][] getAvgMatrix(LinkedList<KeyStrokeSet> sets) {
 
@@ -32,7 +32,8 @@ public abstract class GaussTest {
 				KeyStroke curr = strokesIter.next();
 				double[] values = curr.getValues();
 				for (int i = 0; i < values.length; i++) {
-					avgMatrix[keyIndex][i] += (values[i] / ((double) sets.size()));
+					if (i < avgMatrix[keyIndex].length)
+						avgMatrix[keyIndex][i] += (values[i] / (sets.size()));
 				}
 				keyIndex++;
 
@@ -64,7 +65,7 @@ public abstract class GaussTest {
 				double[] values = strokesIter.next().getValues();
 				for (int i = 0; i < values.length; i++)
 					standardDeviationMatrix[keyIndex][i] += Math.pow(values[i] - avgMatrix[keyIndex][i], 2)
-							/ ((double) sets.size());
+							/ (sets.size());
 				keyIndex++;
 
 			}
@@ -78,6 +79,14 @@ public abstract class GaussTest {
 
 		return standardDeviationMatrix;
 
+	}
+
+	public static double getGaussiancoef() {
+		return gaussianCoef;
+	}
+
+	public static int getNbparams() {
+		return nbParams;
 	}
 
 }

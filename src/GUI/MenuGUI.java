@@ -8,11 +8,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
-
 import Main.Account;
 
 @SuppressWarnings("serial")
-public class MenuGUI extends JFrame implements WindowListener{
+public class MenuGUI extends JFrame implements WindowListener {
 	
 	public JPanel mainPane;
 	public MenuPane menuPane;
@@ -27,6 +26,7 @@ public class MenuGUI extends JFrame implements WindowListener{
 	BDGUI bdGui;
 	PasswordPane passwordPane;
 	SystemConnectionPane systemConnectionPane;
+	DeleteAccountPane deleteAccountPane;
 
 	
 	GetPasswordGUI getPsswdPane;
@@ -156,6 +156,16 @@ public class MenuGUI extends JFrame implements WindowListener{
 		getPsswdPane.getDomainField().grabFocus();
 	}
 	
+	public void initDeleteAccountPane(){
+		deleteAccountPane=new DeleteAccountPane(menuPane,this);
+		mainPane.add(deleteAccountPane);
+		layout.putConstraint(SpringLayout.WEST, deleteAccountPane, 0, SpringLayout.WEST,mainPane);
+		layout.putConstraint(SpringLayout.EAST, deleteAccountPane, 0, SpringLayout.EAST, mainPane);
+		layout.putConstraint(SpringLayout.SOUTH, deleteAccountPane, 0, SpringLayout.SOUTH, mainPane);
+		layout.putConstraint(SpringLayout.NORTH, deleteAccountPane, 0, SpringLayout.NORTH, mainPane);
+		deleteAccountPane.setVisible(true);
+		deleteAccountPane.getDomainField().grabFocus();
+	}
 	public void showMenuPane(){
 
 		menuPane.setVisible(true);
@@ -206,6 +216,7 @@ public class MenuGUI extends JFrame implements WindowListener{
 		this.requestPsswdPane = requestPsswdPane;
 	}
 
+	@Override
 	public SpringLayout getLayout() {
 		return layout;
 	}
@@ -278,16 +289,16 @@ public class MenuGUI extends JFrame implements WindowListener{
 
 	@Override
 	public void windowClosed(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		if(getPsswdPane != null)
+			getPsswdPane.close();
+		if(createAccountPane != null)
+			createAccountPane.close(); 		
 	}
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {
-		if(getPsswdPane != null)
-			getPsswdPane.close();
-		if(createAccountPane != null)
-			createAccountPane.close();		
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

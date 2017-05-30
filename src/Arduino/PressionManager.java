@@ -33,7 +33,7 @@ public class PressionManager implements Runnable {
 
 		console.log("RECHERCHE d'un port disponible...");
 		port = ArduinoUsbChannel.getOneComPort();
-		
+
 		if(port != null){
 			try {
 				vcpChannel = new ArduinoUsbChannel(port);
@@ -67,8 +67,8 @@ public class PressionManager implements Runnable {
 			}
 
 			tabMesures = new ArrayList<Mesure>(); // mesures
-																	// brutes de
-																	// pression
+													// brutes de
+													// pression
 
 			vcpInput = new BufferedReader(new InputStreamReader(vcpChannel.getReader()));
 		}
@@ -90,17 +90,18 @@ public class PressionManager implements Runnable {
 				if (true) {
 
 					String line;
-					try {
-						while (!Thread.interrupted() && end == false) {
+
+					while (!Thread.interrupted() && end == false) {
+						try {
 
 							if ((line = vcpInput.readLine()) != null) {
 								insertionTab(line, tabMesures);
 								console.println("Data from Arduino: " + line);
 							}
 
+						} catch (java.io.InterruptedIOException e) {
+							System.out.println("meow");
 						}
-					} catch (java.io.InterruptedIOException e) {
-						System.out.println("meow");
 					}
 
 					System.out.println("Sortie boucle");
@@ -122,8 +123,8 @@ public class PressionManager implements Runnable {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}catch(NullPointerException e){
-			
+		} catch (NullPointerException e) {
+
 		}
 
 	}

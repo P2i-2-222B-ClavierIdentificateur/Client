@@ -171,6 +171,7 @@ public class KeyStroke extends Key {
 		return values;
 	}
 	
+	@Override
 	public String toString(){
 		String res = "";
 		double[] values = getValues();

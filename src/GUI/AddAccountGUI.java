@@ -82,6 +82,7 @@ public class AddAccountGUI extends JPanel {
 		userIdField = new JTextField("");
 		//on ajoute un key listener pour gerer la validation avec la touche entree
 		userIdField.addKeyListener(new KeyListener(){
+			@Override
 			public void keyPressed(KeyEvent e) {
 				// TODO Auto-generated method stub
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
@@ -96,11 +97,13 @@ public class AddAccountGUI extends JPanel {
 				
 			}
 
+			@Override
 			public void keyReleased(KeyEvent e) {
 				// TODO Auto-generated method stub
 				
 			}
 
+			@Override
 			public void keyTyped(KeyEvent e) {
 				// TODO Auto-generated method stub
 				
@@ -114,6 +117,7 @@ public class AddAccountGUI extends JPanel {
 		final JButton button1 = new JButton("Créer");
 		button1.setSize(15,10);
 		button1.addActionListener(new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent e){
 				try {
 					tryCreateAccount();
@@ -130,6 +134,7 @@ public class AddAccountGUI extends JPanel {
 		passwordLengthField = new JTextField("20");
 		passwordLengthField.addActionListener(new ActionListener(){
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				passwordLengthSlider.setValue(Integer.parseInt(passwordLengthField.getText()));				
 			}
@@ -138,11 +143,13 @@ public class AddAccountGUI extends JPanel {
 		
 		passwordLengthField.addFocusListener(new FocusListener(){
 
+			@Override
 			public void focusGained(FocusEvent e) {
 				// TODO Auto-generated method stub
 				
 			}
 
+			@Override
 			public void focusLost(FocusEvent e) {
 				passwordLengthSlider.setValue(Integer.parseInt(passwordLengthField.getText()));				
 
@@ -153,6 +160,7 @@ public class AddAccountGUI extends JPanel {
 		passwordLengthSlider = new JSlider(8,50,20);
 		passwordLengthSlider.addChangeListener(new ChangeListener(){
 
+			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				passwordLengthField.setText(String.valueOf(passwordLengthSlider.getValue()));
 			}
@@ -301,10 +309,6 @@ public class AddAccountGUI extends JPanel {
 		}
 	
 	}
-	
-	public void close(){
-		bdGUI.close();
-	}
 
 	public JPasswordField getTxt1() {
 		return txt1;
@@ -314,6 +318,9 @@ public class AddAccountGUI extends JPanel {
 		this.txt1 = txt1;
 	}
 	
+	public void close(){
+		bdGUI.close();
+	}
 
 
 	

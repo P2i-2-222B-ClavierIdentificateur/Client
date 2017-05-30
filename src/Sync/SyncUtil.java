@@ -12,6 +12,7 @@ public class SyncUtil extends Thread {
 		super();
 	}
 	
+	@Override
 	public void run(){
 		System.out.println("Syncronisation...");
 		Connection INSA = ConnectionManager.createConnection(INSADatabase);
