@@ -15,6 +15,7 @@ public class KeyStroke extends Key {
 	private char c;
 	private Modifier shift, ctrl, alt, capsLock;
 	private KeyStroke next;
+	private double[] values;
 	
 	public KeyStroke(char c, long timeUp, long timeDown){
 		super(timeUp, timeDown);
@@ -48,12 +49,57 @@ public class KeyStroke extends Key {
 	}
 	
 	/**
+	 * Constructeur si on utilise des donnees traitees pour creer le KeyStroke
+	 * @param values
+	 */
+	public KeyStroke(double[] values){
+		super(0,0); 
+		this.values = Arrays.copyOf(values, values.length);
+	}
+	
+	private void buildValues(){
+		Arrays.fill(values, 0.0);
+		values[0] = getReleasePressTimes();
+		values[1] = getPressReleaseTimes();
+		values[2] = getPressure();
+		if(getShift() != null){
+			values[3] = getShift().getReleasePressTimes();
+			values[4] = getShift().getPressReleaseTimes();
+			values[5] = getShift().getLocation();
+		}
+		if(getCtrl() != null){
+			values[6] = getCtrl().getReleasePressTimes();
+			values[7] = getCtrl().getPressReleaseTimes();
+			values[8] = getCtrl().getLocation();
+		}
+		if(getAlt() != null){
+			values[9] = getAlt().getReleasePressTimes();
+			values[10] = getAlt().getPressReleaseTimes();
+			values[11] = getAlt().getLocation();
+		}
+		if(getCapsLock() != null){
+			values[12] = getCapsLock().getReleasePressTimes();
+			values[13] = getCapsLock().getPressReleaseTimes();
+			values[14] = getCapsLock().getLocation();
+		}
+	}
+	
+	/**
+	 * Retourne un tableau avec les valeurs numeriques necessaires a l'exploitation
+	 * @return le taleau des valeurs
+	 */
+	public double[] getValues(){
+		if(values == null)
+			buildValues();
+		return values;
+	}
+	
+	/**
 	 * Calcule la norme 1 du vecteur
 	 * @return la norme 1
 	 */
 	public double getNorme1(){
 		double norme1 = 0;
-		double[] values = getValues();
 		for(double v: values)
 			norme1 += Math.abs(v);
 		return norme1;
@@ -66,7 +112,6 @@ public class KeyStroke extends Key {
 	 */
 	public double getScalarProduct(KeyStroke ref){
 		double sP = 0;
-		double[] values = getValues();
 		double[] refValues = ref.getValues();
 		for(int i=0; i<values.length; i++)
 			sP += values[i]*refValues[i];
@@ -138,38 +183,7 @@ public class KeyStroke extends Key {
 		return this.getScalarProduct(ref) / (this.getNorme2()*ref.getNorme2());
 	}
 	
-	/**
-	 * Retourne un tableau avec les valeurs numeriques necessaires a l'exploitation
-	 * @return le taleau des valeurs
-	 */
-	public double[] getValues(){
-		double[] values = new double[15];
-		Arrays.fill(values, 0.0);
-		values[0] = getReleasePressTimes();
-		values[1] = getPressReleaseTimes();
-		values[2] = getPressure();
-		if(getShift() != null){
-			values[3] = getShift().getReleasePressTimes();
-			values[4] = getShift().getPressReleaseTimes();
-			values[5] = getShift().getLocation();
-		}
-		if(getCtrl() != null){
-			values[6] = getCtrl().getReleasePressTimes();
-			values[7] = getCtrl().getPressReleaseTimes();
-			values[8] = getCtrl().getLocation();
-		}
-		if(getAlt() != null){
-			values[9] = getAlt().getReleasePressTimes();
-			values[10] = getAlt().getPressReleaseTimes();
-			values[11] = getAlt().getLocation();
-		}
-		if(getCapsLock() != null){
-			values[12] = getCapsLock().getReleasePressTimes();
-			values[13] = getCapsLock().getPressReleaseTimes();
-			values[14] = getCapsLock().getLocation();
-		}
-		return values;
-	}
+	
 	
 	@Override
 	public String toString(){

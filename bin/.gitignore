@@ -1,4 +1,12 @@
-/Arduino/
-/KeystrokeMeasuring/
-/Analyse/
 /GUI/
+/GUIElements/
+/KeystrokeMeasuring/
+/Main/
+/Session/
+/Sync/
+/Warnings/
+/Analyse/
+/Arduino/
+/Database/
+/Encryption/
+/Exception/

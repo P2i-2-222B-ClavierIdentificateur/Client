@@ -13,10 +13,13 @@ public class CosineTest {
 	
 	private static final double cosineSimilarityThreshold = 0.9; 
 	
-
-	public static boolean test(KeyStrokeSet testSet, Account account ) throws BadLoginException {
+	public static boolean test(KeyStrokeSet bruteTestSet, Account account ) throws BadLoginException {
 		try{
-			LinkedList<KeyStrokeSet> sets = KeyStrokeSet.buildReferenceSet(account);
+			
+			LinkedList<KeyStrokeSet> bruteSets = KeyStrokeSet.buildReferenceSet(account);
+			GaussNormalizer gn = new GaussNormalizer(bruteSets);
+			LinkedList<KeyStrokeSet> sets = gn.getNormalizedSets();
+			KeyStrokeSet testSet = gn.normalizeKeyStrokeSet(bruteTestSet);
 			Iterator<KeyStrokeSet> setsIterator = sets.iterator();
 			
 			

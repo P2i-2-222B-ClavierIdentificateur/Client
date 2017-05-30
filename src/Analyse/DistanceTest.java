@@ -14,10 +14,13 @@ public class DistanceTest {
 	private static final double manhattanRatioThreshold = 0.1;
 
 	// TODO fusionner login,domain et password dans une instace ce compte
-	public static boolean test(KeyStrokeSet testSet, Account account) throws BadLoginException {
+	public static boolean test(KeyStrokeSet bruteTestSet, Account account) throws BadLoginException {
 		try {
-
-			LinkedList<KeyStrokeSet> sets = KeyStrokeSet.buildReferenceSet(account);
+			
+			LinkedList<KeyStrokeSet> bruteSets = KeyStrokeSet.buildReferenceSet(account);
+			GaussNormalizer gn = new GaussNormalizer(bruteSets);
+			LinkedList<KeyStrokeSet> sets = gn.getNormalizedSets();
+			KeyStrokeSet testSet = gn.normalizeKeyStrokeSet(bruteTestSet);
 			double[][] euclidianDistances = buildEuclidianDistances(testSet, sets);
 			double[][] manhattanDistances = buildManhattanDistances(testSet, sets);
 			double[] avgEuclidianDistance = new double[euclidianDistances.length];
