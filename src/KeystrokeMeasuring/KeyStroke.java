@@ -58,6 +58,7 @@ public class KeyStroke extends Key {
 	}
 	
 	private void buildValues(){
+		values = new double[15];
 		Arrays.fill(values, 0.0);
 		values[0] = getReleasePressTimes();
 		values[1] = getPressReleaseTimes();
