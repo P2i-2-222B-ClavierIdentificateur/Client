@@ -16,7 +16,8 @@ public class KeyStrokeSet {
 	public KeyStrokeSet(LinkedList<KeyStroke> set){
 		this.setSet(new LinkedList<KeyStroke>(set));
 		Iterator<KeyStroke> itr = set.iterator();
-		KeyStroke cur=itr.next(); //l'iterator commence avant le premier element
+		KeyStroke cur = itr.next(); // l'iterator commence avant le premier
+									// element
 		KeyStroke next;
 		while (itr.hasNext()){
 			next = itr.next();

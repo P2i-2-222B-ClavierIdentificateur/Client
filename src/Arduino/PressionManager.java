@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import KeystrokeMeasuring.TimingManager;
 import jssc.SerialPortException;
@@ -11,17 +13,13 @@ import jssc.SerialPortException;
 public class PressionManager implements Runnable {
 
 	private ArrayList<Double> tabTriee;
+	private LinkedList<Mesure> tabMesures;
 	private ArduinoUsbChannel vcpChannel;
-	private final Console console;
 	private final TimingManager tm;
 	private boolean stop;
 	private boolean end = false;
 
 	public PressionManager(TimingManager tm) {
-
-		console = new Console();
-
-		console.log("DEBUT du programme TestArduino !..");
 
 		setStop(false);
 
@@ -31,15 +29,14 @@ public class PressionManager implements Runnable {
 
 		// Recherche du port de l'Arduino
 
-		console.log("RECHERCHE d'un port disponible...");
+		System.out.println("RECHERCHE d'un port disponible...");
 		port = ArduinoUsbChannel.getOneComPort();
 
-		if(port != null){
+		if (port != null) {
 			try {
 				vcpChannel = new ArduinoUsbChannel(port);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.printStackTrace(System.err);
 			}
 		} else {
 			System.out.println("Impossible de se connecter au module de mesure de pressions, poursuite du programme "
@@ -49,7 +46,6 @@ public class PressionManager implements Runnable {
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException ex) {
-				// Ignorer l'Exception
 			}
 		}
 	}
@@ -57,16 +53,14 @@ public class PressionManager implements Runnable {
 	@Override
 	public void run() {
 		BufferedReader vcpInput = null;
-		ArrayList<Mesure> tabMesures = null;
 		if (!(end)) {
 			try {
 				vcpChannel.open();
 			} catch (SerialPortException | IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e1.printStackTrace(System.err);
 			}
 
-			tabMesures = new ArrayList<Mesure>(); // mesures
+			tabMesures = new LinkedList<Mesure>(); // mesures
 													// brutes de
 													// pression
 
@@ -87,29 +81,22 @@ public class PressionManager implements Runnable {
 					}
 				}
 
-				if (true) {
-
-					String line;
-
-					while (!Thread.interrupted() && end == false) {
+				while (!end) {
+					if (!Thread.interrupted()) {
 						try {
 
+							String line;
 							if ((line = vcpInput.readLine()) != null) {
-								insertionTab(line, tabMesures);
-								console.println("Data from Arduino: " + line);
+								insertionTab(line);
+								System.out.println("Data from Arduino: " + line);
 							}
 
 						} catch (java.io.InterruptedIOException e) {
-							System.out.println("meow");
 						}
 					}
-
-					System.out.println("Sortie boucle");
-
-					triTab(tabMesures);
-					// afficherTabTriee();
-
 				}
+
+				triTab();
 
 			} catch (IOException e) {
 				e.printStackTrace(System.err);
@@ -121,51 +108,53 @@ public class PressionManager implements Runnable {
 			vcpInput.close();
 			vcpChannel.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NullPointerException e) {
-
 		}
 
 	}
 
-	public void insertionTab(String s, ArrayList<Mesure> tab) {
+	public void insertionTab(String s) {
 
 		String[] temp = s.split("_");
-		System.out.println(s);
 
-		char ident = temp[0].charAt(0);
-		double p = Double.parseDouble(temp[1]);
-		int cmpt = Integer.parseInt(temp[2]);
+		if (temp.length == 3) {
 
-		tab.add(new Mesure(cmpt, p, ident));
+			char ident = temp[0].charAt(0);
+			double p = Double.parseDouble(temp[1]);
+			int cmpt = Integer.parseInt(temp[2]);
 
+			tabMesures.add(new Mesure(cmpt, p, ident));
+
+		}
 	}
 
-	public void triTab(ArrayList<Mesure> t) {
+	public void triTab() {
 
-		ArrayList<Double> m = new ArrayList<Double>();
+		Iterator<Mesure> mesuresIter = tabMesures.iterator();
+		LinkedList<Double> m = new LinkedList<Double>();
 
-		int cmpt = t.get(0).compt;
-		double pres = t.get(0).pression;
-		char ident = t.get(0).id;
+		int cmpt = tabMesures.getFirst().compt;
+		double pres = tabMesures.getFirst().pression;
+		char ident = tabMesures.getFirst().id;
 
-		for (int i = 0; i < t.size(); i++) {
-
-			if (t.get(i).compt == cmpt && t.get(i).id == ident && t.get(i).pression >= pres)
-				pres = t.get(i).pression;
-			else {
+		while (mesuresIter.hasNext()) {
+			Mesure tempMesure = mesuresIter.next();
+			if (tempMesure.compt == cmpt && tempMesure.id == ident) {
+				if (tempMesure.pression >= pres) {
+					pres = tempMesure.pression;
+				}
+			} else {
 				m.add(pres);
-				ident = t.get(i).id;
-				pres = t.get(i).pression;
-				cmpt = t.get(i).compt;
+				ident = tempMesure.id;
+				pres = tempMesure.pression;
+				cmpt = tempMesure.compt;
 			}
-
 		}
 
 		m.add(pres);
 
-		tabTriee = new ArrayList<Double>(m);
+		setTabTriee(new ArrayList<Double>(m));
 
 	}
 
@@ -175,13 +164,17 @@ public class PressionManager implements Runnable {
 			System.out.println(m);
 
 	}
-	
-	public void close(){
+
+	public void close() {
 		setStop(true);
 	}
 
 	public ArrayList<Double> getTabTriee() {
 		return tabTriee;
+	}
+
+	public void setTabTriee(ArrayList<Double> tabTriee) {
+		this.tabTriee = tabTriee;
 	}
 
 	public boolean isStop() {

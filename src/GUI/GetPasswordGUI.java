@@ -17,7 +17,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-import Analyse.DistanceTest;
+import Analyse.CosineTest;
 import Analyse.KeyStrokeSet;
 import Exception.BadLoginException;
 import GUIElements.CancelButton;
@@ -217,8 +217,8 @@ public class GetPasswordGUI extends JPanel{
 			
 			int i = Main.sessionManager.getCurrentSession().getPasswordTries().size()-1;
 			try {
-				//if(DistanceTest.test(new KeyStrokeSet(ksl), account)){
-				if(DistanceTest.test(new KeyStrokeSet(ksl),account)){
+				if(CosineTest.test(new KeyStrokeSet(ksl), account)){
+				//if(DistanceTest.test(new KeyStrokeSet(ksl),account)){
 				//if(CosineTest.test(new KeyStrokeSet(ksl), account)){
 					Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
 					f.showPasswordPane(PasswordGetter.getPassword(account));

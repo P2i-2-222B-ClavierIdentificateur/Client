@@ -16,7 +16,7 @@ public class DistanceTest {
 	// TODO fusionner login,domain et password dans une instace ce compte
 	public static boolean test(KeyStrokeSet bruteTestSet, Account account) throws BadLoginException {
 		try {
-			
+
 			LinkedList<KeyStrokeSet> bruteSets = KeyStrokeSet.buildReferenceSet(account);
 			GaussNormalizer gn = new GaussNormalizer(bruteSets);
 			LinkedList<KeyStrokeSet> sets = gn.getNormalizedSets();
