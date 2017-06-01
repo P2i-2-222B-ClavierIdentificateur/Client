@@ -17,11 +17,15 @@ public class PressionManager implements Runnable {
 	private ArduinoUsbChannel vcpChannel;
 	private final TimingManager tm;
 	private boolean stop;
-	private boolean end = false;
+	private boolean end;
+	private boolean triee;
+	private boolean wait;
 
 	public PressionManager(TimingManager tm) {
 
 		setStop(false);
+		setEnd(false);
+		setTriee(false);
 
 		this.tm = tm;
 
@@ -29,7 +33,7 @@ public class PressionManager implements Runnable {
 
 		// Recherche du port de l'Arduino
 
-		System.out.println("RECHERCHE d'un port disponible...");
+		System.err.println("RECHERCHE d'un port disponible...");
 		port = ArduinoUsbChannel.getOneComPort();
 
 		if (port != null) {
@@ -52,51 +56,58 @@ public class PressionManager implements Runnable {
 
 	@Override
 	public void run() {
+		
 		BufferedReader vcpInput = null;
-		if (!(end)) {
-			try {
-				vcpChannel.open();
-			} catch (SerialPortException | IOException e1) {
-				e1.printStackTrace(System.err);
-			}
-
-			tabMesures = new LinkedList<Mesure>(); // mesures
-													// brutes de
-													// pression
-
-			vcpInput = new BufferedReader(new InputStreamReader(vcpChannel.getReader()));
+		
+		try {
+			vcpChannel.open();
+		} catch (SerialPortException | IOException e1) {
+			e1.printStackTrace(System.err);
 		}
+
+		tabMesures = new LinkedList<Mesure>(); // mesures
+												// brutes de
+												// pression
+
+		vcpInput = new BufferedReader(new InputStreamReader(vcpChannel.getReader()));
+
 		while (!stop && tm.isArduinoConnected()) {
 
 			try {
 
 				// Attend le debut de la lecture des donnees par le clavier
-				synchronized (tm) {
-					try {
-						System.out.println("Waiting!");
-						tm.wait();
-						setEnd(false);
-						System.out.print("Done waiting!");
-					} catch (InterruptedException ie) {
-					}
-				}
-
-				while (!end) {
-					if (!Thread.interrupted()) {
+				System.err.println("Waiting TimingManager!");
+				while (wait) {
+					synchronized (this) {
 						try {
-
-							String line;
-							if ((line = vcpInput.readLine()) != null) {
-								insertionTab(line);
-								System.out.println("Data from Arduino: " + line);
-							}
-
-						} catch (java.io.InterruptedIOException e) {
+							wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
 						}
 					}
 				}
+				System.err.println("Done waiting TimingManager!");
+
+				setTriee(false);
+
+				System.err.println("Entree boucle de lecture des pressions");
+
+				while (!Thread.interrupted()) {
+
+					String line;
+
+					if ((line = vcpInput.readLine()) != null) {
+						insertionTab(line);
+						System.out.println("Data from Arduino: " + line);
+					}
+
+				}
+
+				System.err.println("Sortie boucle de lecture des pressions");
 
 				triTab();
+
+				setWait(true);
 
 			} catch (IOException e) {
 				e.printStackTrace(System.err);
@@ -114,6 +125,14 @@ public class PressionManager implements Runnable {
 
 	}
 
+	public boolean isWait() {
+		return wait;
+	}
+
+	public void setWait(boolean wait) {
+		this.wait = wait;
+	}
+
 	public void insertionTab(String s) {
 
 		String[] temp = s.split("_");
@@ -126,10 +145,14 @@ public class PressionManager implements Runnable {
 
 			tabMesures.add(new Mesure(cmpt, p, ident));
 
+			System.err.println(s + " inseree");
+
 		}
 	}
 
 	public void triTab() {
+
+		System.err.println("Debut du tri des mesures");
 
 		Iterator<Mesure> mesuresIter = tabMesures.iterator();
 		LinkedList<Double> m = new LinkedList<Double>();
@@ -156,6 +179,12 @@ public class PressionManager implements Runnable {
 
 		setTabTriee(new ArrayList<Double>(m));
 
+		System.err.println("Tableau des mesures trie");
+
+		setTriee(true);
+
+		tm.resume();
+
 	}
 
 	public void afficherTabTriee() {
@@ -167,6 +196,11 @@ public class PressionManager implements Runnable {
 
 	public void close() {
 		setStop(true);
+	}
+
+	public synchronized void resume() {
+		setWait(false);
+		notify();
 	}
 
 	public ArrayList<Double> getTabTriee() {
@@ -191,6 +225,14 @@ public class PressionManager implements Runnable {
 
 	public void setEnd(boolean end) {
 		this.end = end;
+	}
+
+	public boolean isTriee() {
+		return triee;
+	}
+
+	public void setTriee(boolean triee) {
+		this.triee = triee;
 	}
 
 }
