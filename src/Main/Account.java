@@ -52,7 +52,7 @@ public class Account {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = new String(password);
 	}
 
 	public int getLoginHash() {

@@ -10,14 +10,14 @@ import Exception.BadLoginException;
 public class DistanceTest {
 
 	// TODO régler les valeurs des seuils
-	private static final double euclidianRatioThreshold = 0.99;
+	private static final double euclidianRatioThreshold = 0.5;
 	private static final double manhattanRatioThreshold = 0.1;
 
 	// TODO fusionner login,domain et password dans une instace ce compte
 	public static boolean test(KeyStrokeSet bruteTestSet, Account account) throws BadLoginException {
 		try {
 
-			LinkedList<KeyStrokeSet> bruteSets = KeyStrokeSet.buildReferenceSet(account);
+			LinkedList<KeyStrokeSet> bruteSets = new LinkedList<KeyStrokeSet>(KeyStrokeSet.buildReferenceSet(account));
 			GaussNormalizer gn = new GaussNormalizer(bruteSets);
 			LinkedList<KeyStrokeSet> sets = gn.getNormalizedSets();
 			KeyStrokeSet testSet = gn.normalizeKeyStrokeSet(bruteTestSet);

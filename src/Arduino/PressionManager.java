@@ -28,6 +28,7 @@ public class PressionManager implements Runnable {
 		setStop(false);
 		setEnd(false);
 		setTriee(false);
+		setWait(true);
 
 		this.tm = tm;
 
