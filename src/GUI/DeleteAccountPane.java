@@ -209,18 +209,20 @@ public class DeleteAccountPane extends JPanel {
 			int i = Main.sessionManager.getCurrentSession().getPasswordTries().size() - 1;
 			try {
 				// if(DistanceTest.test(new KeyStrokeSet(ksl), account)){
-				if (DistanceTest.test(new KeyStrokeSet(ksl), account)) {
-					// if(CosineTest.test(new KeyStrokeSet(ksl), account)){
-					Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
-					Main.sessionManager.endCurrentSession();
-					deleteAccount(account);
-					f.menuPane.setVisible(true);
-					this.setVisible(false);
+				if (ksl.size() > 0 && i>=0) {
+					if (DistanceTest.test(new KeyStrokeSet(ksl), account)) {
+						// if(CosineTest.test(new KeyStrokeSet(ksl), account)){
+						Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
+						Main.sessionManager.endCurrentSession();
+						deleteAccount(account);
+						f.menuPane.setVisible(true);
+						this.setVisible(false);
 
-				} else {
-					new SimpleWarning("Maniere d'ecrire non reconnue");
-					Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(false);
+					} else {
+						new SimpleWarning("Maniere d'ecrire non reconnue");
+						Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(false);
 
+					}
 				}
 			} catch (BadLoginException e) {
 				// TODO Auto-generated catch block

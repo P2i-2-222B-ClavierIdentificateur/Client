@@ -3,6 +3,7 @@ package Arduino;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ public class PressionManager implements Runnable {
 	private boolean end;
 	private boolean triee;
 	private boolean wait;
+	private boolean connected;
 
 	public PressionManager(TimingManager tm) {
 
@@ -35,7 +37,7 @@ public class PressionManager implements Runnable {
 
 		System.err.println("RECHERCHE d'un port disponible...");
 		port = ArduinoUsbChannel.getOneComPort();
-
+		//TODO mettre la methode de recherche de port dans TimingManager
 		if (port != null) {
 			try {
 				vcpChannel = new ArduinoUsbChannel(port);
@@ -63,6 +65,7 @@ public class PressionManager implements Runnable {
 			vcpChannel.open();
 		} catch (SerialPortException | IOException e1) {
 			e1.printStackTrace(System.err);
+			
 		}
 
 		tabMesures = new LinkedList<Mesure>(); // mesures
@@ -91,15 +94,16 @@ public class PressionManager implements Runnable {
 				setTriee(false);
 
 				System.err.println("Entree boucle de lecture des pressions");
-
-				while (!Thread.interrupted()) {
-
-					String line;
-
-					if ((line = vcpInput.readLine()) != null) {
-						insertionTab(line);
-						System.out.println("Data from Arduino: " + line);
-					}
+				
+				while (!end) {
+					try{
+						String line;
+	
+						if ((line = vcpInput.readLine()) != null) {
+							insertionTab(line);
+							System.out.println("Data from Arduino: " + line);
+						}
+				}catch(InterruptedIOException e){}
 
 				}
 
@@ -184,6 +188,8 @@ public class PressionManager implements Runnable {
 		setTriee(true);
 
 		tm.resume();
+		
+		tabMesures.clear();
 
 	}
 
@@ -235,4 +241,13 @@ public class PressionManager implements Runnable {
 		this.triee = triee;
 	}
 
+	public boolean isConnected() {
+		return connected;
+	}
+
+	public void setConnected(boolean connected) {
+		this.connected = connected;
+	}
+
+	
 }
