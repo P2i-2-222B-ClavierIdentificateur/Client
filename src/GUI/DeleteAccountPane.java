@@ -224,10 +224,10 @@ public class DeleteAccountPane extends JPanel {
 			System.out.println("PasswordTry ajouté");
 			if (Request.checkIfAccountExists(account, Main.conn)) {
 				int i = Main.sessionManager.getCurrentSession().getPasswordTries().size() - 1;
-				//try {
+				try {
 					// if(DistanceTest.test(new KeyStrokeSet(ksl), account)){
 					if (ksl.size() > 0 && i >= 0) {
-						//if (DistanceTest.test(new KeyStrokeSet(ksl), account)) {
+						if (DistanceTest.test(new KeyStrokeSet(ksl), account)) {
 							// if(CosineTest.test(new KeyStrokeSet(ksl),
 							// account)){
 							Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
@@ -237,7 +237,7 @@ public class DeleteAccountPane extends JPanel {
 							this.setVisible(false);
 							this.close();
 
-						/*} else {
+						} else {
 							new SimpleWarning("Maniere d'ecrire non reconnue");
 							Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(false);
 
@@ -246,7 +246,7 @@ public class DeleteAccountPane extends JPanel {
 				} catch (BadLoginException e) {
 					System.out.println(
 							account.getLogin() + "|" + account.getDomain() + "|" + account.getPasswordAsString());
-				}*/}
+				}
 			} else {
 				psswdField.setText("");
 				timingManager.getKeyStrokes().clear();

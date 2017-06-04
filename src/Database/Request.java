@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
+import Analyse.KeyStrokeSet;
 import Exception.BadLoginException;
+import KeystrokeMeasuring.KeyStroke;
 
 import java.sql.PreparedStatement;
 
@@ -34,18 +37,19 @@ public class Request {
 		return rs;
 	}
 
-	public static int[] getLastSuccessfulEntries(Account account, Connection conn) {
+	public static LinkedList<KeyStrokeSet> getLastSuccessfulEntries(Account account, Connection conn) {
 		int loginHash = account.getLoginHash();
 		int domainHash = account.getDomainHash();
 		String sysLoginHash = String.valueOf(account.getSysAccount().getSysLoginHash());
 
-		String request = "SELECT Entree.Index from Entree "
-				+ "	Where Entree.Session_index in (Select Session.index From Session "
-				+ "	Where Session.sucess = 1 and Session.Compte_Index in (Select Compte.Index From Compte"
-				+ "	Where Compte.Login = ? and Compte.domainHash = ? and Compte.CompteSystem_Login = ?))"
-				+ "	Order by Entree.Index DESC Limit 50;";
+		String request = "Select * From Touche Where Touche.Entree_Index in (SELECT Entree.Index from Entree"
+				+ " Where Entree.Session_index in (Select Session.index From Session"
+				+ " Where Session.sucess = 1 and Session.Compte_Index in (Select Compte.Index From Compte"
+				+ " Where Compte.Login = ? and Compte.domainHash = ? and Compte.CompteSystem_Login = ?))"
+				+ " Order by Entree.Index DESC);";
 
 		ResultSet res = null;
+		LinkedList<KeyStrokeSet> sets = new LinkedList<KeyStrokeSet>();
 		int[] indexes = new int[50];
 
 		try {
@@ -54,16 +58,33 @@ public class Request {
 			entriesStatement.setInt(2, domainHash);
 			entriesStatement.setString(3, sysLoginHash);
 			res = entriesStatement.executeQuery();
-			int i = 0;
-			while (res.next() && i < 50) {
-				indexes[i] = res.getInt(1);
-				i++;
+			int prevIndex = -1;
+			LinkedList<KeyStroke> set = new LinkedList<KeyStroke>();
+
+			while (res.next() && sets.size() <= 50) {
+				if (res.getInt("Entree_Index") != prevIndex) {
+					if (set!=null && set.size()>0){
+						System.out.print("#");
+						sets.add(new KeyStrokeSet(set));
+					}
+					set = new LinkedList<KeyStroke>();
+					prevIndex = res.getInt("Entree_Index");
+				}
+				ArrayList<String> encryptedValues = new ArrayList<String>(8);
+				for (int i = 1; i < 16; i++) {
+					encryptedValues.add(res.getString(i));
+					// System.out.println("String : " + res.getString(i));
+				}
+				// System.out.println("values" + values.size());
+				set.add(new KeyStroke(encryptedValues, account));
 			}
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return indexes;
+		System.out.print("\n");
+		return sets;
 	}
 
 	public static ArrayList<ArrayList<String>> getTouchesForEntry(int entryIndex, Connection conn) {

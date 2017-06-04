@@ -236,6 +236,17 @@ public class KeyStroke extends Key {
 	@Override
 	public ArrayList<String> getEncryptedValues(String p) {
 		ArrayList<String> encryptedValues = super.getEncryptedValues(p);
+		if(shift == null){
+			shift = new Modifier();
+		}
+		if(ctrl == null){
+			ctrl = new Modifier();		}
+		if(alt == null){
+			alt = new Modifier();
+		}
+		if(capsLock == null){
+			capsLock = new Modifier();
+		}
 		encryptedValues.add(Encryption.encryptValue(pressure, p));
 		encryptedValues.add(Encryption.encryptInt(modifierSequence, p));
 		encryptedValues.addAll(shift.getEncryptedValues(p));
