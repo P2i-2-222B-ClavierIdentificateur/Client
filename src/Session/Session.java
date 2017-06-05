@@ -55,7 +55,7 @@ public class Session {
 	public void checkEnd() {
 		if (currentTime.compareTo(shceduledEnd) >= 0) {
 			System.out.println("ending session");
-			manager.newSession();
+			manager.newSession(null);
 		}
 	}
 
@@ -64,7 +64,7 @@ public class Session {
 	public void addPasswordTry(PasswordTry passwordTry) {
 		passwordTries.add(passwordTry);
 		if (passwordTry.isSuccess()) {
-			manager.newSession();
+			manager.newSession(null);
 		}
 		System.out.println("Essai ajouté");
 	}

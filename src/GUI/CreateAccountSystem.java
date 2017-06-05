@@ -18,6 +18,7 @@ import GUIElements.CancelButton;
 import Main.Main;
 import Main.SystemAccount;
 import Warnings.SimpleWarning;
+import Warnings.TOTPChoice;
 
 @SuppressWarnings("serial")
 public class CreateAccountSystem extends JPanel {
@@ -61,32 +62,35 @@ public class CreateAccountSystem extends JPanel {
 		this.add(idField);
 		this.add(passwordField1);
 		this.add(passwordField2);
+		
+		CreateAccountSystem cas = this;
+
 
 		connexion = new JButton("Créer");
 		connexion.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
+				/*try {
 					tryCreateAccount();
-				} catch (AccountAlreadyExistsException e1) {
+				} catch (AccountAlreadyExistsException e1) {*/
+				new TOTPChoice(cas);
+
 					// TODO Auto-generated catch block
 					// e1.printStackTrace();
-				}
+				//}
 
 			}
 		});
+		
 
 		KeyListener fieldListener = new KeyListener() {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					try {
-						tryCreateAccount();
-					} catch (AccountAlreadyExistsException e1) {
-						// TODO Auto-generated catch block
-						// e1.printStackTrace();
-					}
+						new TOTPChoice(cas);
+						//tryCreateAccount();
+					
 
 				}
 			}
@@ -151,7 +155,7 @@ public class CreateAccountSystem extends JPanel {
 
 	}
 
-	private void tryCreateAccount() throws AccountAlreadyExistsException {
+	public void tryCreateAccount() throws AccountAlreadyExistsException {
 		psswdMatch = Main.passwordMatch(passwordField1.getPassword(), passwordField2.getPassword());
 		String pswd = new String(passwordField1.getPassword());
 		String login = idField.getText();
@@ -185,6 +189,14 @@ public class CreateAccountSystem extends JPanel {
 		} else {
 			new SimpleWarning("L'identifiant trop court");
 		}
+	}
+
+	public JTextField getIdField() {
+		return idField;
+	}
+
+	public void setIdField(JTextField idField) {
+		this.idField = idField;
 	}
 
 }

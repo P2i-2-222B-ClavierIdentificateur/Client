@@ -12,14 +12,14 @@ public class Main {
 	public static SessionManager sessionManager;
 	public static SystemAccount currentSystemAccount;
 	public static Connection conn;
+	public static MenuGUI mg ;
 
 	public static void main(String[] args) throws InterruptedException {
 		conn = ConnectionBD.connect();
 		sessionManager = new SessionManager();
 		// GUI initGui = new GUI(); //initialisation de l'interface
-		@SuppressWarnings("unused")
-		MenuGUI mg = new MenuGUI();
-		SyncUtil sync = new SyncUtil();
+		mg = new MenuGUI();
+		//SyncUtil sync = new SyncUtil();
 		// sync.start();
 	}
 

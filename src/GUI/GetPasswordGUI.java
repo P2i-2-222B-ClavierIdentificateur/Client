@@ -51,6 +51,11 @@ public class GetPasswordGUI extends JPanel  {
 	private String password;
 
 	private boolean premiereEntree = true;
+	
+	DatabaseWorkFrame dbPane;
+	
+	private Account account;
+
 
 	public GetPasswordGUI(JPanel menuPane, final MenuGUI f) {
 		password = "";
@@ -220,6 +225,7 @@ public class GetPasswordGUI extends JPanel  {
 		if (login.length() > 2 && domain.length() > 2) {
 			password = new String(psswdField.getPassword());
 			Account account = new Account(login, domain, password);
+			this.setAccount(account);
 			Main.sessionManager.getCurrentSession().setAccount(account);
 			// timingManager.getStrokes().clear();
 			// timingManager.getKeyStrokes().clear();
@@ -235,13 +241,22 @@ public class GetPasswordGUI extends JPanel  {
 								// if(CosineTest.test(new KeyStrokeSet(ksl),
 								// account)){
 								Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
-								Main.sessionManager.newSession();
+								initBdPane(Main.sessionManager.getCurrentSession().getPasswordTries().size());
+								Main.sessionManager.newSession(dbPane);
 								f.showPasswordPane(PasswordGetter.getPassword(account));
 								setVisible(false);
 								close();
 
 							} else {
+								String key;
+								if((key = Request.getTOTPKey(Main.currentSystemAccount.getLogin()))!=null){
+									f.initUseTOTP(this, key);
+									setVisible(false);
+								}
+								System.out.println(key);
+
 								new SimpleWarning("Maniere d'ecrire non reconnue");
+								
 								Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(false);
 
 							}
@@ -269,6 +284,11 @@ public class GetPasswordGUI extends JPanel  {
 		timingManager.getAccount().setPassword(new String());
 		premiereEntree = true;
 	}
+	
+	public void initBdPane(int maxValue){
+		dbPane = new DatabaseWorkFrame(maxValue);		
+
+	}
 
 	public JTextField getDomainField() {
 		return domainField;
@@ -288,6 +308,14 @@ public class GetPasswordGUI extends JPanel  {
 
 	public void close() {
 		timingManager.close();
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 }

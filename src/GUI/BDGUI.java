@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
 import javax.swing.SpringLayout;
 
 import Database.Insert;
@@ -26,8 +27,11 @@ public class BDGUI extends JPanel { // fenetre ou se fait la saisie des mots de
 	JPasswordField psswd; // le champ de mot de passe
 	Account account;
 	int passwordLength;
-	public JPanel progressBar;
+	public JProgressBar progressBar;
 	private TimingManager timingManager;
+	
+	DatabaseWorkFrame dbPane;
+	SpringLayout layout;
 
 	MenuGUI f;
 	int validTries = 0;
@@ -42,26 +46,10 @@ public class BDGUI extends JPanel { // fenetre ou se fait la saisie des mots de
 
 		this.setBackground(Color.DARK_GRAY);
 
-		// un panel servant de barre de progression pour compter le nombre de
-		// mots de passe
-		// entres correctement
-		progressBar = new JPanel() {
-
-			@Override
-			public void paintComponent(Graphics g) {
-				g.setColor(Color.white);
-				g.fillRect((0), 0, 350 - 20, 50);
-
-				for (int i = 0; i < Main.sessionManager.getCurrentSession().getPasswordTries().size(); i++) {
-
-					g.setColor(Color.blue);
-					g.fillRect((int) (5 + i * ((350 - 10) / 15.0)), 5, (int) ((350 - 10) / 15.0 - 5), 50 - 10);
-				}
-			}
-		};
+		progressBar = new JProgressBar(0, 15);
+		progressBar.setStringPainted(true);
 
 		this.add(progressBar);
-		progressBar.repaint();
 
 		label1.setForeground(Color.white);
 		timingManager = new TimingManager(account, psswd);
@@ -74,10 +62,13 @@ public class BDGUI extends JPanel { // fenetre ou se fait la saisie des mots de
 					Main.sessionManager.getCurrentSession().reshceduleEnd();
 					timingManager.build();
 
+					progressBar.setValue(Main.sessionManager.getCurrentSession().getPasswordTries().size());
 					if (Main.sessionManager.getCurrentSession().getPasswordTries().size() >= 15) {
+						label1.setVisible(false);
+						psswd.setVisible(false);
 						flushSession();
+						
 					}
-
 					progressBar.repaint();
 					timingManager.getKeyStrokes().clear();
 					timingManager.getStrokes().clear();
@@ -109,7 +100,7 @@ public class BDGUI extends JPanel { // fenetre ou se fait la saisie des mots de
 		this.add(label1);
 		this.add(psswd);
 
-		SpringLayout layout = new SpringLayout();
+		layout = new SpringLayout();
 		setLayout(layout);
 
 		// on positionne la barre de progression
@@ -132,7 +123,7 @@ public class BDGUI extends JPanel { // fenetre ou se fait la saisie des mots de
 	}
 
 	private void flushSession() {
-
+		initBdPane(Main.sessionManager.getCurrentSession().getPasswordTries().size());
 		for (int i = 0; i < Main.sessionManager.getCurrentSession().getPasswordTries().size(); i++) {
 			Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
 		}
@@ -140,7 +131,7 @@ public class BDGUI extends JPanel { // fenetre ou se fait la saisie des mots de
 		String generatedPassword = PasswordGetter.generatePassword(account, passwordLength);
 		Main.sessionManager.getCurrentSession().setAccount(account);
 		Main.sessionManager.getCurrentSession().setSuccess(true);
-		Main.sessionManager.newSession();
+		Main.sessionManager.newSession(dbPane);
 		f.showPasswordPane(generatedPassword);
 		f.hideBdGui();
 
@@ -148,6 +139,11 @@ public class BDGUI extends JPanel { // fenetre ou se fait la saisie des mots de
 
 	public void close() {
 		timingManager.close();
+	}
+	
+	public void initBdPane(int maxValue){
+		dbPane = new DatabaseWorkFrame(maxValue);		
+
 	}
 
 }

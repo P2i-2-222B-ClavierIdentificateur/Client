@@ -50,6 +50,9 @@ public class DeleteAccountPane extends JPanel {
 	private String password;
 
 	private boolean premiereEntree = true;
+	
+	DatabaseWorkFrame dbPane;
+
 
 	public DeleteAccountPane(JPanel menuPane, final MenuGUI f) {
 		password = "";
@@ -231,7 +234,15 @@ public class DeleteAccountPane extends JPanel {
 							// if(CosineTest.test(new KeyStrokeSet(ksl),
 							// account)){
 							Main.sessionManager.getCurrentSession().getPasswordTries().get(i).setSuccess(true);
-							Main.sessionManager.newSession();
+							initBdPane(Main.sessionManager.getCurrentSession().getPasswordTries().size());
+
+							Main.sessionManager.newSession(dbPane);
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							deleteAccount(account);
 							f.menuPane.setVisible(true);
 							this.setVisible(false);
@@ -263,28 +274,42 @@ public class DeleteAccountPane extends JPanel {
 	}
 
 	private void deleteAccount(Account account) {
-		int accountIndex = Delete.getAccountIndex(account);
-		LinkedList<Integer> sessionsIndexes = Delete.getSessionsForAccount(accountIndex);
-		System.out.println("Deleting " + sessionsIndexes.size() + " sessions for account " + accountIndex);
-		Iterator<Integer> sessionsIterator = sessionsIndexes.iterator();
-		while (sessionsIterator.hasNext()) {
-			Integer curSession = sessionsIterator.next();
-			LinkedList<Integer> entriesIndexes = Delete.getEntriesForSession(curSession.intValue());
-			System.out.println("Deleting " + entriesIndexes.size() + " entries for sesison " + curSession.intValue());
-			Iterator<Integer> entriesIterator = entriesIndexes.iterator();
-			while (entriesIterator.hasNext()) {
-				Integer curEntry = entriesIterator.next();
-				int n = Delete.deleteTouchesForEntry(curEntry.intValue());
-				System.out.println("Deleting " + n + " keystokes for entry " + curEntry.intValue());
+		initBdPane(100);
+		Thread dbThread = new Thread(){
+			public void run(){
+				int accountIndex = Delete.getAccountIndex(account);
+				LinkedList<Integer> sessionsIndexes = Delete.getSessionsForAccount(accountIndex);
+				System.out.println("Deleting " + sessionsIndexes.size() + " sessions for account " + accountIndex);
+				Iterator<Integer> sessionsIterator = sessionsIndexes.iterator();
+				while (sessionsIterator.hasNext()) {
+					dbPane.getProgressBar().setValue(0);
+					Integer curSession = sessionsIterator.next();
+					LinkedList<Integer> entriesIndexes = Delete.getEntriesForSession(curSession.intValue());
+					System.out.println("Deleting " + entriesIndexes.size() + " entries for sesison " + curSession.intValue());
+					Iterator<Integer> entriesIterator = entriesIndexes.iterator();
+					while (entriesIterator.hasNext()) {
+						Integer curEntry = entriesIterator.next();
+						int n = Delete.deleteTouchesForEntry(curEntry.intValue());
+						System.out.println("Deleting " + n + " keystokes for entry " + curEntry.intValue());
+						dbPane.getProgressBar().setValue(dbPane.getProgressBar().getValue()+(100/entriesIndexes.size()));
+
+					}
+					Delete.deleteEntriesForSession(curSession);
+				}
+				Delete.deleteSessionsForAccount(accountIndex);
+				Delete.deleteAccount(accountIndex);
+				dbPane.setVisible(false);
 			}
-			Delete.deleteEntriesForSession(curSession);
-
-		}
-		Delete.deleteSessionsForAccount(accountIndex);
-
-		Delete.deleteAccount(accountIndex);
+		};
+		dbThread.start();
+		
 	}
 
+	
+	public void initBdPane(int maxValue){
+		dbPane = new DatabaseWorkFrame(maxValue);		
+
+	}
 	public JTextField getDomainField() {
 		return domainField;
 	}

@@ -197,5 +197,27 @@ public class Request {
 		}
 		return false;
 	}
+	
+	public static String getTOTPKey(String Account){
+		String query = "Select TOTPKey From CompteSystem Where Login = ? Limit 1;";
+		String key = null;
+		Connection conn = Main.conn;
+		
+		try {
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, String.valueOf(Account.hashCode()));
+			
+			ResultSet rs = st.executeQuery();
+			if(rs.first()){
+				key = rs.getString(1);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("key : " + key + " for login : " + Account);
+		return key;
+
+}
 
 }

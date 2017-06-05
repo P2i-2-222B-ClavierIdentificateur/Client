@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 
 import Encryption.Encryption;
+import GUI.DatabaseWorkFrame;
 import Main.Account;
 import Session.Session;
 
@@ -48,111 +50,125 @@ public class Insert {
 
 	}
 
-	public static void addSession(Session s, Connection conn) {
+	public static void addSession(Session s, Connection conn,DatabaseWorkFrame dbp) {
+		
+		Thread dbThread = new Thread(){
+			
+			public void run(){
+				System.out.println("Ajout d'un nouvelle session");
+				ResultSet res = null;
 
-		System.out.println("Ajout d'un nouvelle session");
-		ResultSet res = null;
+				// on recupere le compte associe a la session
 
-		// on recupere le compte associe a la session
+				int userId = s.getAccount().getLoginHash();
 
-		int userId = s.getAccount().getLoginHash();
+				int domain = s.getAccount().getDomainHash();
 
-		int domain = s.getAccount().getDomainHash();
-
-		String account = "SELECT Compte.Index FROM Compte WHERE Login = \"" + userId + "\" and domainHash = " + domain
-				+ ";";
-
-		String session = "INSERT INTO Session (Compte_Index,sucess) values(?,?); ";
-
-		String sessionIndex = "SELECT max(Session.index) FROM Session;";
-
-		String entree = "INSERT INTO Entree (Session_index,Local,try) values (?,?,?)";
-
-		String entreeIndex = "SELECT max(Entree.Index) From Entree where Session_index = ?;";
-
-		String touche = "INSERT INTO Touche (Entree_Index,timeUp,timeDown,pressure,modifierSequence,"
-				+ "shiftUp,shiftDown,shiftLocation,ctrlUp,ctrlDown,ctrlLocation,altUp,altDown,"
-				+ "altLocation,capslockUp,capsLockDown) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),";
-		String toucheValues = "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-		Statement accountStatement;
-		try {
-			accountStatement = conn.createStatement();
-			Statement begin = conn.createStatement();
-			begin.executeQuery("Start Transaction;");
-			res = accountStatement.executeQuery(account);
-
-			int accountId = 0;
-			while (res.next()) {
-				accountId = res.getInt(1);
-			}
-
-			PreparedStatement sessionStatement = conn.prepareStatement(session);
-			sessionStatement.setInt(1, accountId);
-			sessionStatement.setBoolean(2, s.isSuccess());
-			sessionStatement.executeUpdate();
-
-			Statement sessionIndexStatement = conn.createStatement();
-			res = sessionIndexStatement.executeQuery(sessionIndex);
-			int sessionId = 0;
-			while (res.next()) {
-				sessionId = res.getInt("max(Session.index)");
-			}
-			System.out.println("Ajout des donnéees");
-			for (int i = 0; i < s.getPasswordTries().size(); i++) {
-				System.out.println("Ajout entree " + i + " pour la session " + sessionId);
-				PreparedStatement entreeStatement = conn.prepareStatement(entree);
-				entreeStatement.setInt(1, sessionId);
-				entreeStatement.setString(2, s.getLocal());
-				entreeStatement.setInt(3, i);
-				entreeStatement.executeUpdate();
-
-				PreparedStatement entreeIndexStatement = conn.prepareStatement(entreeIndex);
-				entreeIndexStatement.setInt(1, sessionId);
-				res = entreeIndexStatement.executeQuery();
-				int entreeId = 0;
-				while (res.next()) {
-					entreeId = res.getInt("max(Entree.Index)");
-				}
-
-				String allTouche = touche
-						+ String.join(",",
-								Collections.nCopies(s.getPasswordTries().get(i).getKeys().size() - 1, toucheValues))
+				String account = "SELECT Compte.Index FROM Compte WHERE Login = \"" + userId + "\" and domainHash = " + domain
 						+ ";";
-				PreparedStatement toucheStatement = conn.prepareStatement(allTouche);
-				
-				for (int j = 0; j < s.getPasswordTries().get(i).getKeys().size(); j++) {
-					
-					ArrayList<String> encryptedValues = s.getPasswordTries().get(i).getKeys().get(j)
-							.getEncryptedValues(s.getAccount().getPasswordAsString());
-					
-					toucheStatement.setInt(j * 16 + 1, entreeId);
 
-					// TODO moddifier avec un iterator
-					int k = 0;
-					for (k = 0; k < encryptedValues.size()-1; k++){
-						toucheStatement.setString(j * 16 + k + 2, encryptedValues.get(k));
+				String session = "INSERT INTO Session (Compte_Index,sucess) values(?,?); ";
+
+				String sessionIndex = "SELECT max(Session.index) FROM Session;";
+
+				String entree = "INSERT INTO Entree (Session_index,Local,try) values (?,?,?)";
+
+				String entreeIndex = "SELECT max(Entree.Index) From Entree where Session_index = ?;";
+
+				String touche = "INSERT INTO Touche (Entree_Index,timeUp,timeDown,pressure,modifierSequence,"
+						+ "shiftUp,shiftDown,shiftLocation,ctrlUp,ctrlDown,ctrlLocation,altUp,altDown,"
+						+ "altLocation,capslockUp,capsLockDown) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),";
+				String toucheValues = "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+				Statement accountStatement;
+				try {
+					accountStatement = conn.createStatement();
+					Statement begin = conn.createStatement();
+					begin.executeQuery("Start Transaction;");
+					res = accountStatement.executeQuery(account);
+
+					int accountId = 0;
+					while (res.next()) {
+						accountId = res.getInt(1);
 					}
 
+					PreparedStatement sessionStatement = conn.prepareStatement(session);
+					sessionStatement.setInt(1, accountId);
+					sessionStatement.setBoolean(2, s.isSuccess());
+					sessionStatement.executeUpdate();
+
+					Statement sessionIndexStatement = conn.createStatement();
+					res = sessionIndexStatement.executeQuery(sessionIndex);
+					int sessionId = 0;
+					while (res.next()) {
+						sessionId = res.getInt("max(Session.index)");
+					}
+					System.out.println("Ajout des donnéees");
+					for (int i = 0; i < s.getPasswordTries().size(); i++) {
+						System.out.println("Ajout entree " + i + " pour la session " + sessionId);
+						PreparedStatement entreeStatement = conn.prepareStatement(entree);
+						entreeStatement.setInt(1, sessionId);
+						entreeStatement.setString(2, s.getLocal());
+						entreeStatement.setInt(3, i);
+						entreeStatement.executeUpdate();
+
+						PreparedStatement entreeIndexStatement = conn.prepareStatement(entreeIndex);
+						entreeIndexStatement.setInt(1, sessionId);
+						res = entreeIndexStatement.executeQuery();
+						int entreeId = 0;
+						while (res.next()) {
+							entreeId = res.getInt("max(Entree.Index)");
+						}
+
+						String allTouche = touche
+								+ String.join(",",
+										Collections.nCopies(s.getPasswordTries().get(i).getKeys().size() - 1, toucheValues))
+								+ ";";
+						PreparedStatement toucheStatement = conn.prepareStatement(allTouche);
+
+						for (int j = 0; j < s.getPasswordTries().get(i).getKeys().size(); j++) {
+
+							ArrayList<String> encryptedValues = s.getPasswordTries().get(i).getKeys().get(j)
+									.getEncryptedValues(s.getAccount().getPasswordAsString());
+
+							toucheStatement.setInt(j * 16 + 1, entreeId);
+
+							// TODO moddifier avec un iterator
+							int k = 0;
+							for (k = 0; k < encryptedValues.size() - 1; k++) {
+								toucheStatement.setString(j * 16 + k + 2, encryptedValues.get(k));
+							}
+
+						}
+						System.out.println(toucheStatement.executeUpdate());
+						if (dbp!= null) {
+							dbp.getProgressBar().setValue(dbp.getProgressBar().getValue()+1);
+						}
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				System.out.println(toucheStatement.executeUpdate());
 
+				System.out.println("Session ajoutée");
+				Statement commit;
+				try {
+					commit = conn.createStatement();
+					commit.executeQuery("Commit;");
+
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (dbp!= null) {
+					dbp.setVisible(false);
+				}
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			
+		};
+		dbThread.start();
 
-		System.out.println("Session ajoutée");
-		Statement commit;
-		try {
-			commit = conn.createStatement();
-			commit.executeQuery("Commit;");
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 
 	}
 
@@ -234,5 +250,33 @@ public class Insert {
 		return "Une erreur s'est produite";
 
 	}
+	
+	public static void addTOTPKey(String key,String account){
+		String query  = "Update CompteSystem Set TOTPKey = ? where Login = ? ;" ;
+		
+		Connection conn = Main.Main.conn;
+		
+		try {
+			Statement begin = conn.createStatement();
+			begin.executeQuery("Start Transaction;");
+			PreparedStatement st = conn.prepareStatement(query);
+			st.setString(1, key);
+			st.setString(2, String.valueOf(account.hashCode()));
+			st.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Statement commit;
+		try {
+			commit = conn.createStatement();
+			commit.executeQuery("Commit;");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+}
 
 }

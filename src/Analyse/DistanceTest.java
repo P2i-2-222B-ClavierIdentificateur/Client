@@ -6,10 +6,12 @@ import java.util.LinkedList;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 import Exception.BadLoginException;
+import GUI.DatabaseWorkFrame;
 import KeystrokeMeasuring.KeyStroke;
 import Main.Account;
 
 public class DistanceTest {
+	
 
 	// TODO régler les valeurs des seuils
 	private static final double euclidianRatioThreshold = 0.45;
@@ -85,5 +87,7 @@ public class DistanceTest {
 		}
 		return distances;
 	}
-
+	
+	
+	
 }

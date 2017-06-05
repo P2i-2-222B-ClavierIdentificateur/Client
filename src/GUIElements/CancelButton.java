@@ -24,7 +24,7 @@ public class CancelButton extends JButton implements ActionListener {
 		// TODO Auto-generated method stub
 		currentPane.setVisible(false);
 		prevPane.setVisible(true);
-		Main.Main.sessionManager.newSession();
+		Main.Main.sessionManager.newSession(null);
 
 	}
 

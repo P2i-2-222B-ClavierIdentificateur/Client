@@ -2,7 +2,10 @@ package Session;
 
 import java.util.ArrayList;
 
+import javax.swing.JProgressBar;
+
 import Database.Insert;
+import GUI.DatabaseWorkFrame;
 
 /*
  * Objet permettant la gestion des sessions durant l'l'execution du programme  
@@ -15,18 +18,18 @@ public class SessionManager {
 
 	public SessionManager() {
 		prevSessions = new ArrayList<Session>();
-		newSession();
+		newSession(null);
 	}
 
 	// termine une session et l'ajoute à la liste des sessions terminées
-	public void endCurrentSession() {
+	public void endCurrentSession(DatabaseWorkFrame dbp) {
 		currentSession.setRunning(false);
 		// le succès de la session est défini à partir du succès de la dernière
 		// tentative
 		if (currentSession.getPasswordTries().size() > 0) {
 			currentSession.setSuccess(
 					currentSession.getPasswordTries().get(currentSession.getPasswordTries().size() - 1).isSuccess());
-			Insert.addSession(currentSession, Main.Main.conn);
+			Insert.addSession(currentSession, Main.Main.conn,dbp);
 		}
 		prevSessions.add(new Session(currentSession, this));
 		System.out.println("Ending current session : " + currentSession.isSuccess());
@@ -34,9 +37,9 @@ public class SessionManager {
 	}
 
 	// créé une nouvelle session en terminant la précédante si elle existe.
-	public void newSession() {
+	public void newSession(DatabaseWorkFrame dbp) {
 		if (currentSession != null) {
-			endCurrentSession();
+			endCurrentSession(dbp);
 		}
 		System.out.println("New Session");
 		currentSession = new Session(this);
