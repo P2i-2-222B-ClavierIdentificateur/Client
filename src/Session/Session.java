@@ -38,7 +38,8 @@ public class Session {
 		timeUpdater = new TimeUpdater(this);
 		passwordTries = new ArrayList<PasswordTry>();
 		InputContext ic = InputContext.getInstance();
-		local = ic.getLocale().getLanguage() + "," + ic.getLocale().getCountry();
+		//local = ic.getLocale().getLanguage() + "," + ic.getLocale().getCountry();
+		local ="null";
 	}
 
 	// constructeur générant une copie d'une session existante
